@@ -17,8 +17,8 @@ class CircularBuffer
 public:
     CircularBuffer(int s = default_size):
         data(nullptr),
-        size(nextPowerOfTwo(s)),
-        mask(nextPowerOfTwo(s) - 1),
+        size(juce::nextPowerOfTwo(s)),
+        mask(juce::nextPowerOfTwo(s) - 1),
         ptr(mask)
     {
         init_data();
@@ -29,7 +29,7 @@ public:
     }
 
     void setSize(float s) {
-        size = nextPowerOfTwo(s);
+        size = juce::nextPowerOfTwo(s);
         mask = size - 1;
         ptr = mask;
         delete_data();

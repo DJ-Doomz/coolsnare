@@ -9,6 +9,19 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::createParams()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout params;
+
+    params.add(std::make_unique<juce::AudioParameterFloat>("head1Delay", "head1Delay", juce::NormalisableRange<float> { 0.0f, 480.0f, 1.0f, .7 }, 0.0f));
+    params.add(std::make_unique<juce::AudioParameterFloat>("head1FB", "head1FB", -1.1, 1.1, 0.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("head1Mix", "head1Mix", 0., 1., 1.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("head2Delay", "head2Delay", juce::NormalisableRange<float> { 0.0f, 480.0f, 1.0f, .7 }, 0.0f));
+    params.add(std::make_unique<juce::AudioParameterFloat>("head2FB", "head2FB", -1.1, 1.1, 0.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("head2Mix", "head2Mix", 0., 1., 1.));
+    return params;
+}
+
 //==============================================================================
 CoolsnareAudioProcessor::CoolsnareAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -150,22 +163,21 @@ juce::AudioProcessorEditor* CoolsnareAudioProcessor::createEditor()
 //==============================================================================
 void CoolsnareAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    auto state = apvts.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void CoolsnareAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName(apvts.state.getType()))
+            apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
 }
 
-juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::createParams()
-{
-    juce::AudioProcessorValueTreeState::ParameterLayout params;
-    return params;
-}
+
 
 //==============================================================================
 // This creates new instances of the plugin..

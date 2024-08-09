@@ -13,6 +13,7 @@
 
 CoolSnare::CoolSnare(juce::AudioProcessorValueTreeState& v): apvts(v)
 {
+    init_params();
 }
 
 void CoolSnare::processBlock(juce::AudioBuffer<float>& outputAudio, juce::MidiBuffer& midiData)
@@ -71,7 +72,7 @@ void CoolSnare::processBlock(juce::AudioBuffer<float>& outputAudio, juce::MidiBu
 }
 
 
-void CoolSnare::renderVoices(AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
+void CoolSnare::renderVoices(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
 {
     synthBuffer.setSize(outputBuffer.getNumChannels(), numSamples, false, false, true);
     synthBuffer.clear();
@@ -81,7 +82,7 @@ void CoolSnare::renderVoices(AudioBuffer<float>& outputBuffer, int startSample, 
         // actual per-sample processing goes here
         updateEnvelopes();
 
-        float o = 0.;
+        float o = impulse();
 
         for (int ch = 0; ch < synthBuffer.getNumChannels(); ch++)
         {
@@ -100,6 +101,15 @@ void CoolSnare::prepareToPlay(double newRate)
 }
 
 void CoolSnare::updateEnvelopes()
+{
+}
+
+float CoolSnare::impulse()
+{
+    return 2. * random.nextFloat() - 1.;
+}
+
+void CoolSnare::do_resonance()
 {
 }
 
