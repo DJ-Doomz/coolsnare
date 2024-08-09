@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="qud325" name="coolsnare" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="1" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth"
               defines="JUCE_VST3_EMULATE_MIDI_CC_WITH_PARAMETERS=0">
   <MAINGROUP id="fGS04E" name="coolsnare">
     <GROUP id="{DCFB67DC-5A15-C981-D7FB-A0F9F2BCFB36}" name="Source">
       <FILE id="VKQ2He" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
+      <FILE id="yJGum7" name="CircularBuffer.h" compile="0" resource="0"
+            file="Source/CircularBuffer.h"/>
       <FILE id="dHIUcX" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
       <FILE id="GWxsxu" name="CoolSnare.cpp" compile="1" resource="0" file="Source/CoolSnare.cpp"/>
