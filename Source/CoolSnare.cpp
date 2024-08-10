@@ -17,6 +17,8 @@ CoolSnare::CoolSnare(juce::AudioProcessorValueTreeState& v): apvts(v)
     impulse = 0;
     impulse_vol = 0;
     init_params();
+    c_hp1Freq = c_hp2Freq = c_lp1Freq = c_lp2Freq = -1;
+    updateFilters();
 }
 
 void CoolSnare::processBlock(juce::AudioBuffer<float>& outputAudio, juce::MidiBuffer& midiData)
@@ -77,7 +79,7 @@ void CoolSnare::processBlock(juce::AudioBuffer<float>& outputAudio, juce::MidiBu
 
 void CoolSnare::renderVoices(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
 {
-    synthBuffer.setSize(outputBuffer.getNumChannels(), numSamples, false, false, true);
+    synthBuffer.setSize(1, numSamples, false, false, true);
     synthBuffer.clear();
     updateFilters();
 
@@ -86,8 +88,11 @@ void CoolSnare::renderVoices(juce::AudioBuffer<float>& outputBuffer, int startSa
         // actual per-sample processing goes here
         updateEnvelopes();
         impulse = get_impulse();
-        do_resonance();
-        float o = impulse + *head1Mix * head1.get(0) + *head2Mix * head2.get(0);
+        //do_resonance();
+        float o = impulse;// +*head1Mix * head1.get(0) + *head2Mix * head2.get(0);
+        if (isnan(o) || isinf(o)) 
+            o = 0.;
+
         o = juce::jlimit(-1.f, 1.f, o);
 
         for (int ch = 0; ch < synthBuffer.getNumChannels(); ch++)
@@ -98,7 +103,7 @@ void CoolSnare::renderVoices(juce::AudioBuffer<float>& outputBuffer, int startSa
 
     for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
     {
-        outputBuffer.addFrom(channel, startSample, synthBuffer, channel, 0, numSamples);
+        outputBuffer.addFrom(channel, startSample, synthBuffer, 0, 0, numSamples);
     }
 }
 
@@ -115,6 +120,8 @@ void CoolSnare::prepareToPlay(double newRate, int samplePerBlock)
     lp2.prepare(spec_mono);
     peak2.prepare(spec_mono);
     hp2.prepare(spec_mono);
+    c_hp1Freq = c_hp2Freq = c_lp1Freq = c_lp2Freq = -1;
+    updateFilters();
 }
 
 void CoolSnare::updateEnvelopes()
@@ -162,29 +169,33 @@ void CoolSnare::updateFilters()
     if (*hp1Freq != c_hp1Freq)
     {
         c_hp1Freq = *hp1Freq;
-        float f = juce::jlimit(1., sampleRate / 2. - 1., *hp1Freq * sampleRate / 2.);
+        float f = juce::jlimit(10., (sampleRate / 2.) - 10., *hp1Freq * sampleRate / 2.);
         hp1.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, f);
+        hp1.reset();
     }
 
     if (*hp2Freq != c_hp2Freq)
     {
         c_hp2Freq = *hp2Freq;
-        float f = juce::jlimit(1., sampleRate / 2. - 1., *hp2Freq * sampleRate / 2.);
+        float f = juce::jlimit(10., (sampleRate / 2.) - 10., *hp2Freq * sampleRate / 2.);
         hp2.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, f);
+        hp2.reset();
     }
 
     if (*lp1Freq != c_lp1Freq)
     {
         c_lp1Freq = *lp1Freq;
-        float f = juce::jlimit(1., sampleRate / 2. - 1., *lp1Freq * sampleRate / 2.);
+        float f = juce::jlimit(10., (sampleRate / 2.) - 10., *lp1Freq * sampleRate / 2.);
         lp1.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, f);
+        lp1.reset();
     }
 
     if (*lp2Freq != c_lp2Freq)
     {
         c_lp2Freq = *lp2Freq;
-        float f = juce::jlimit(1., sampleRate / 2. - 1., *lp2Freq * sampleRate / 2.);
+        float f = juce::jlimit(10., (sampleRate / 2.) - 10., *lp2Freq * sampleRate / 2.);
         lp2.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, f);
+        lp2.reset();
     }
 }
 

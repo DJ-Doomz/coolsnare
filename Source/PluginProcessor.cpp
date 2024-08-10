@@ -121,6 +121,16 @@ void CoolsnareAudioProcessor::changeProgramName (int index, const juce::String& 
 void CoolsnareAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     cs.prepareToPlay(sampleRate, samplesPerBlock);
+
+    juce::dsp::ProcessSpec spec_stereo;
+
+    spec_stereo.maximumBlockSize = samplesPerBlock;
+    spec_stereo.numChannels = getTotalNumOutputChannels();
+    spec_stereo.sampleRate = sampleRate;
+
+    limiter.prepare(spec_stereo);
+    limiter.setThreshold(0);
+    limiter.setRelease(10);
 }
 
 void CoolsnareAudioProcessor::releaseResources()
@@ -158,6 +168,12 @@ bool CoolsnareAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 void CoolsnareAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     cs.processBlock(buffer, midiMessages);
+
+    // apply limiting
+    juce::dsp::AudioBlock<float> block(buffer);
+
+    juce::dsp::ProcessContextReplacing<float> ctx(block);
+    limiter.process(ctx);
 }
 
 //==============================================================================

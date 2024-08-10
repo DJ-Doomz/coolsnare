@@ -59,6 +59,8 @@ private:
     void init_data()
     {
         data = new float[size];
+        for (int i = 0; i < size; i++)
+            data[i] = 0;
     }
 
     void delete_data()

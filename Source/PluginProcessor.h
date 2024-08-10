@@ -59,6 +59,8 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParams();
     CoolSnare cs;
 
+    juce::dsp::Limiter<float> limiter;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoolsnareAudioProcessor)
 };
