@@ -26,60 +26,49 @@ public:
     void prepareToPlay(double newRate, int samplePerBlock);
 private:
     float get_impulse();
+    float get_noise();
     void do_resonance();
     void updateEnvelopes();
     void updateFilters();
 
     float impulse;
+    float impulse_phase;
     float impulse_vol;
-    CircularBuffer head1, head2;
+    float noise_vol;
+    CircularBuffer head;
 
-    juce::dsp::IIR::Filter<float> lp1, peak1, hp1, lp2, peak2, hp2;
+    juce::dsp::IIR::Filter<float> lp, peak, hp, noisepeak;
 
     juce::Random random;
 
-    juce::AudioBuffer<float> synthBuffer;
+    juce::AudioBuffer<float> synthBuffer,
+        impulseBuffer;
     juce::AudioProcessorValueTreeState& apvts;
 
     // todo: make this not stupid
-    float c_hp1Freq, c_hp2Freq, c_lp1Freq, c_lp2Freq;
+    float c_hpFreq, c_lpFreq;
 
     // parameters
     std::atomic<float>
-        * head1Delay,
-        * head1FB,
-        * head1Mix,
-        * hp1Freq,
-        * lp1Freq,
-        * peak1Freq,
-        * peak1Q,
-        * peak1Gain,
-        * head2Delay,
-        * head2FB,
-        * head2Mix,
-        * hp2Freq,
-        * lp2Freq,
-        * peak2Freq,
-        * peak2Q,
-        * peak2Gain,
-        * depth,
-        * sympathy;
+        * delay1,
+        * FB1,
+        * headMix,
+        * hpFreq,
+        * lpFreq,
+        * peakFreq,
+        * peakQ,
+        * peakGain;
 
     void init_params() {
-        head1Delay = apvts.getRawParameterValue("head1Delay");
-        head1FB = apvts.getRawParameterValue("head1FB");
-        head1Mix = apvts.getRawParameterValue("head1Mix");
-        hp1Freq = apvts.getRawParameterValue("hp1Freq");
-        lp1Freq = apvts.getRawParameterValue("lp1Freq");
+        delay1 = apvts.getRawParameterValue("delay1");
+        FB1 = apvts.getRawParameterValue("FB1");
+        headMix = apvts.getRawParameterValue("headMix");
 
-        head2Delay = apvts.getRawParameterValue("head2Delay");
-        head2FB = apvts.getRawParameterValue("head2FB");
-        head2Mix = apvts.getRawParameterValue("head2Mix");
-        hp2Freq = apvts.getRawParameterValue("hp2Freq");
-        lp2Freq = apvts.getRawParameterValue("lp2Freq");
-
-        depth = apvts.getRawParameterValue("depth");
-        sympathy = apvts.getRawParameterValue("sympathy");
+        hpFreq = apvts.getRawParameterValue("hpFreq");
+        lpFreq = apvts.getRawParameterValue("lpFreq");
+        peakFreq = apvts.getRawParameterValue("peakFreq");
+        peakQ = apvts.getRawParameterValue("peakQ");
+        peakGain = apvts.getRawParameterValue("peakGain");
     }
     
     float smoothit(float x, float targetx, float smooth)
