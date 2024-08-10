@@ -88,8 +88,8 @@ void CoolSnare::renderVoices(juce::AudioBuffer<float>& outputBuffer, int startSa
         // actual per-sample processing goes here
         updateEnvelopes();
         impulse = get_impulse();
-        //do_resonance();
-        float o = impulse;// +*head1Mix * head1.get(0) + *head2Mix * head2.get(0);
+        do_resonance();
+        float o = impulse + *head1Mix * head1.get(0) + *head2Mix * head2.get(0);
         if (isnan(o) || isinf(o)) 
             o = 0.;
 
@@ -126,7 +126,7 @@ void CoolSnare::prepareToPlay(double newRate, int samplePerBlock)
 
 void CoolSnare::updateEnvelopes()
 {
-    impulse_vol = smoothit(impulse_vol, 0., 0.9);
+    impulse_vol = smoothit(impulse_vol, 0., 0.999);
 }
 
 float CoolSnare::get_impulse()
@@ -169,7 +169,7 @@ void CoolSnare::updateFilters()
     if (*hp1Freq != c_hp1Freq)
     {
         c_hp1Freq = *hp1Freq;
-        float f = juce::jlimit(10., (sampleRate / 2.) - 10., *hp1Freq * sampleRate / 2.);
+        float f = juce::jlimit(10.f, (sampleRate / 2.f) - 10.f, hp1Freq->load());
         hp1.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, f);
         hp1.reset();
     }
@@ -177,7 +177,7 @@ void CoolSnare::updateFilters()
     if (*hp2Freq != c_hp2Freq)
     {
         c_hp2Freq = *hp2Freq;
-        float f = juce::jlimit(10., (sampleRate / 2.) - 10., *hp2Freq * sampleRate / 2.);
+        float f = juce::jlimit(10.f, (sampleRate / 2.f) - 10.f, hp2Freq->load());
         hp2.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, f);
         hp2.reset();
     }

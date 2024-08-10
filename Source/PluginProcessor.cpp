@@ -16,7 +16,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("head1Delay", "head1Delay", juce::NormalisableRange<float> { 0.0f, 480.0f, 1.0f, .7 }, 0.0f));
     params.add(std::make_unique<juce::AudioParameterFloat>("head1FB", "head1FB", -1.1, 1.1, 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("head1Mix", "head1Mix", 0., 10., 1.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("hp1Freq", "hp1Freq", 0., .1, 0.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("hp1Freq", "hp1Freq", 10., 500, 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("lp1Freq", "lp1Freq", 0., 1., 1.));
     //params.add(std::make_unique<juce::AudioParameterFloat>("peak1Freq", "peak1Freq", 0., 1., 1.));
     //params.add(std::make_unique<juce::AudioParameterFloat>("peak1Q", "peak1Q", 0., 1., 1.));
@@ -25,7 +25,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("head2Delay", "head2Delay", juce::NormalisableRange<float> { 0.0f, 480.0f, 1.0f, .7 }, 0.0f));
     params.add(std::make_unique<juce::AudioParameterFloat>("head2FB", "head2FB", -1.1, 1.1, 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("head2Mix", "head2Mix", 0., 10., 1.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("hp2Freq", "hp2Freq", 0., .1, 0.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("hp2Freq", "hp2Freq", 10., 500, 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("lp2Freq", "lp2Freq", 0., 1., 1.));
     //params.add(std::make_unique<juce::AudioParameterFloat>("peak2Freq", "peak2Freq", 0., 1., 1.));
     //params.add(std::make_unique<juce::AudioParameterFloat>("peak2Q", "peak2Q", 0., 1., 1.));
@@ -167,13 +167,21 @@ bool CoolsnareAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 
 void CoolsnareAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    juce::ScopedNoDenormals noDenormals;
+    auto totalNumInputChannels = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+    // spent 2 or so hours debugging why everything is broken only to find out this line is actually important
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+        buffer.clear(i, 0, buffer.getNumSamples());
+
     cs.processBlock(buffer, midiMessages);
 
     // apply limiting
-    juce::dsp::AudioBlock<float> block(buffer);
+    //juce::dsp::AudioBlock<float> block(buffer);
 
-    juce::dsp::ProcessContextReplacing<float> ctx(block);
-    limiter.process(ctx);
+    //juce::dsp::ProcessContextReplacing<float> ctx(block);
+    //limiter.process(ctx);
 }
 
 //==============================================================================
