@@ -15,10 +15,23 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
 
     params.add(std::make_unique<juce::AudioParameterFloat>("head1Delay", "head1Delay", juce::NormalisableRange<float> { 0.0f, 480.0f, 1.0f, .7 }, 0.0f));
     params.add(std::make_unique<juce::AudioParameterFloat>("head1FB", "head1FB", -1.1, 1.1, 0.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("head1Mix", "head1Mix", 0., 1., 1.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("head1Mix", "head1Mix", 0., 10., 1.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("hp1Freq", "hp1Freq", 0., .1, 0.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("lp1Freq", "lp1Freq", 0., 1., 1.));
+    //params.add(std::make_unique<juce::AudioParameterFloat>("peak1Freq", "peak1Freq", 0., 1., 1.));
+    //params.add(std::make_unique<juce::AudioParameterFloat>("peak1Q", "peak1Q", 0., 1., 1.));
+    //params.add(std::make_unique<juce::AudioParameterFloat>("peak1Gain", "peak1Gain", 0., 1., 1.));
+
     params.add(std::make_unique<juce::AudioParameterFloat>("head2Delay", "head2Delay", juce::NormalisableRange<float> { 0.0f, 480.0f, 1.0f, .7 }, 0.0f));
     params.add(std::make_unique<juce::AudioParameterFloat>("head2FB", "head2FB", -1.1, 1.1, 0.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("head2Mix", "head2Mix", 0., 1., 1.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("head2Mix", "head2Mix", 0., 10., 1.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("hp2Freq", "hp2Freq", 0., .1, 0.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("lp2Freq", "lp2Freq", 0., 1., 1.));
+    //params.add(std::make_unique<juce::AudioParameterFloat>("peak2Freq", "peak2Freq", 0., 1., 1.));
+    //params.add(std::make_unique<juce::AudioParameterFloat>("peak2Q", "peak2Q", 0., 1., 1.));
+    //params.add(std::make_unique<juce::AudioParameterFloat>("peak2Gain", "peak2Gain", 0., 1., 1.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("depth", "depth", juce::NormalisableRange<float> { 0.0f, 280.0f, 1.0f, .7 }, 0.0f));
+    params.add(std::make_unique<juce::AudioParameterFloat>("sympathy", "sympathy", -1., 1., 0.));
     return params;
 }
 
@@ -107,8 +120,7 @@ void CoolsnareAudioProcessor::changeProgramName (int index, const juce::String& 
 //==============================================================================
 void CoolsnareAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    cs.prepareToPlay(sampleRate, samplesPerBlock);
 }
 
 void CoolsnareAudioProcessor::releaseResources()
