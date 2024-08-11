@@ -13,14 +13,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
 {
     juce::AudioProcessorValueTreeState::ParameterLayout params;
 
-    params.add(std::make_unique<juce::AudioParameterFloat>("delay1", "delay1", juce::NormalisableRange<float> { 0.0f, 600.0f, 1.0f, .7 }, 0.0f));
-    params.add(std::make_unique<juce::AudioParameterFloat>("FB1", "FB1", -1.1, 1.1, 0.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("headMix", "headMix", 0., 10., 1.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("hpFreq", "hpFreq", 10., 500, 0.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("lpFreq", "lpFreq", 0., 1., 1.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("delay1", "delay1", juce::NormalisableRange<float> { 0.0f, 600.0f, 1.0f, .7 }, 210.0f));
+    params.add(std::make_unique<juce::AudioParameterFloat>("FB1", "FB1", -1.1, 1.1, 0.93));
+    params.add(std::make_unique<juce::AudioParameterFloat>("headMix", "headMix", 0., 10., 4.21));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noiseMix", "noiseMix", 0., 2., 0.17));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noiseRelease", "noiseRelease", 0., 1., .43));
+    params.add(std::make_unique<juce::AudioParameterFloat>("hpFreq", "hpFreq", 10., 500, 190.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("lpFreq", "lpFreq", 0., 1., .06));
     params.add(std::make_unique<juce::AudioParameterFloat>("peakFreq", "peakFreq", 0., 1., 1.));
     params.add(std::make_unique<juce::AudioParameterFloat>("peakQ", "peakQ", 0., 1., 1.));
     params.add(std::make_unique<juce::AudioParameterFloat>("peakGain", "peakGain", 0., 1., 1.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("accent", "accent", 0., 1., 0.));
     
     return params;
 }

@@ -18,6 +18,8 @@ CoolSnare::CoolSnare(juce::AudioProcessorValueTreeState& v): apvts(v)
     impulse_vol = 0;
     impulse_phase = 0;
     noise_vol = 0;
+    note_in_hertz = 440;
+    vel = 0;
     init_params();
     c_hpFreq = c_lpFreq = -1;
     updateFilters();
@@ -99,7 +101,7 @@ void CoolSnare::renderVoices(juce::AudioBuffer<float>& outputBuffer, int startSa
         updateEnvelopes();
         impulse = get_impulse();
         do_resonance();
-        float o = impulse + *headMix * head.get(0) + get_noise();
+        float o = impulse + *headMix * head.get(0) + *noiseMix * get_noise();
         if (isnan(o) || isinf(o)) 
             o = 0.;
 
@@ -138,7 +140,9 @@ void CoolSnare::prepareToPlay(double newRate, int samplePerBlock)
 void CoolSnare::updateEnvelopes()
 {
     impulse_vol = smoothit(impulse_vol, 0., 0.999);
-    noise_vol = smoothit(noise_vol, 0., 0.9999);
+
+    float nr = juce::jmap(noiseRelease->load(), .999f, .99999f);
+    noise_vol = smoothit(noise_vol, 0., nr);
 }
 
 float CoolSnare::get_impulse()
@@ -147,7 +151,7 @@ float CoolSnare::get_impulse()
     if (impulse_phase < impulseBuffer.getNumSamples())
     {
         s = impulseBuffer.getSample(0, impulse_phase);
-        impulse_phase += 44100.f / sampleRate;
+        impulse_phase += (note_in_hertz * 44100.f / 440.f) / sampleRate;
     }
     
     return s * impulse_vol;
@@ -192,16 +196,21 @@ void CoolSnare::updateFilters()
         c_hpFreq = *hpFreq;
         float f = juce::jlimit(10.f, (sampleRate / 2.f) - 10.f, hpFreq->load());
         hp.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, f);
-        hp.reset();
     }
 
-    if (*lpFreq != c_lpFreq)
-    {
-        c_lpFreq = *lpFreq;
-        float f = juce::jlimit(10., (sampleRate / 2.) - 10., *lpFreq * sampleRate / 2.);
-        lp.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, f);
-        lp.reset();
-    }
+    // lowpass opens up when velocity goes up
+    float a = vel* vel* vel* vel * *accent;
+    float f =  (*lpFreq + a) * sampleRate / 2.;
+    c_lpFreq = juce::jlimit(10.f, (sampleRate / 2.f) - 10.f, smoothit(c_lpFreq, f, .9));
+
+    lp.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, c_lpFreq);
+    
+    //if (*lpFreq != c_lpFreq)
+    //{
+    //    c_lpFreq = *lpFreq;
+    //    float f = juce::jlimit(10., (sampleRate / 2.) - 10., *lpFreq * sampleRate / 2.);
+    //    lp.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, f);
+    //}
 
 }
 
@@ -209,8 +218,12 @@ void CoolSnare::handleMidiEvent(const juce::MidiMessage& m)
 {
     if (m.isNoteOn())
     {
-        impulse_vol = m.getFloatVelocity();
-        noise_vol = m.getFloatVelocity();
+        note_in_hertz = m.getMidiNoteInHertz(m.getNoteNumber());
+        vel = m.getFloatVelocity();
+        impulse_vol = vel;
+        if (vel > noise_vol)
+            noise_vol = vel;
+        
         impulse_phase = 0;
     }
     else if (m.isAllNotesOff() || m.isAllSoundOff())

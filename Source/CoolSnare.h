@@ -34,7 +34,9 @@ private:
     float impulse;
     float impulse_phase;
     float impulse_vol;
+    float note_in_hertz;
     float noise_vol;
+    float vel;
     CircularBuffer head;
 
     juce::dsp::IIR::Filter<float> lp, peak, hp, noisepeak;
@@ -52,9 +54,12 @@ private:
     std::atomic<float>
         * delay1,
         * FB1,
+        * noiseMix,
+        * noiseRelease,
         * headMix,
         * hpFreq,
         * lpFreq,
+        * accent,
         * peakFreq,
         * peakQ,
         * peakGain;
@@ -63,12 +68,15 @@ private:
         delay1 = apvts.getRawParameterValue("delay1");
         FB1 = apvts.getRawParameterValue("FB1");
         headMix = apvts.getRawParameterValue("headMix");
+        noiseMix = apvts.getRawParameterValue("noiseMix");
+        noiseRelease = apvts.getRawParameterValue("noiseRelease");
 
         hpFreq = apvts.getRawParameterValue("hpFreq");
         lpFreq = apvts.getRawParameterValue("lpFreq");
         peakFreq = apvts.getRawParameterValue("peakFreq");
         peakQ = apvts.getRawParameterValue("peakQ");
         peakGain = apvts.getRawParameterValue("peakGain");
+        accent = apvts.getRawParameterValue("accent");
     }
     
     float smoothit(float x, float targetx, float smooth)
