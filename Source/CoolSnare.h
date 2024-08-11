@@ -57,6 +57,8 @@ private:
         * noiseMix,
         * noiseRelease,
         * headMix,
+        * impulseMix,
+        * impulseType,
         * hpFreq,
         * lpFreq,
         * accent,
@@ -77,6 +79,9 @@ private:
         peakQ = apvts.getRawParameterValue("peakQ");
         peakGain = apvts.getRawParameterValue("peakGain");
         accent = apvts.getRawParameterValue("accent");
+
+        impulseMix = apvts.getRawParameterValue("impulseMix");
+        impulseType = apvts.getRawParameterValue("impulseType");
     }
     
     float smoothit(float x, float targetx, float smooth)

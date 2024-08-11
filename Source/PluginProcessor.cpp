@@ -17,6 +17,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("FB1", "FB1", -1.1, 1.1, 0.93));
     params.add(std::make_unique<juce::AudioParameterFloat>("headMix", "headMix", 0., 10., 4.21));
     params.add(std::make_unique<juce::AudioParameterFloat>("noiseMix", "noiseMix", 0., 2., 0.17));
+    params.add(std::make_unique<juce::AudioParameterFloat>("impulseMix", "impulseMix", 0., 2., 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("noiseRelease", "noiseRelease", 0., 1., .43));
     params.add(std::make_unique<juce::AudioParameterFloat>("hpFreq", "hpFreq", 10., 500, 190.));
     params.add(std::make_unique<juce::AudioParameterFloat>("lpFreq", "lpFreq", 0., 1., .06));
@@ -24,6 +25,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("peakQ", "peakQ", 0., 1., 1.));
     params.add(std::make_unique<juce::AudioParameterFloat>("peakGain", "peakGain", 0., 1., 1.));
     params.add(std::make_unique<juce::AudioParameterFloat>("accent", "accent", 0., 1., 0.));
+    params.add(std::make_unique<juce::AudioParameterChoice>("impulseType", "impulseType", juce::StringArray({ "sample", "noise", "click"}), 0));
     
     return params;
 }

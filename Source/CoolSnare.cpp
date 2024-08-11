@@ -101,7 +101,7 @@ void CoolSnare::renderVoices(juce::AudioBuffer<float>& outputBuffer, int startSa
         updateEnvelopes();
         impulse = get_impulse();
         do_resonance();
-        float o = impulse + *headMix * head.get(0) + *noiseMix * get_noise();
+        float o = *impulseMix * impulse + *headMix * head.get(0) + *noiseMix * get_noise();
         if (isnan(o) || isinf(o)) 
             o = 0.;
 
@@ -148,15 +148,30 @@ void CoolSnare::updateEnvelopes()
 float CoolSnare::get_impulse()
 {
     float s = 0;
-    if (impulse_phase < impulseBuffer.getNumSamples())
-    {
-        s = impulseBuffer.getSample(0, impulse_phase);
-        impulse_phase += (note_in_hertz * 44100.f / 440.f) / sampleRate;
-    }
     
+    int it = floor(*impulseType);
+    switch (it)
+    {
+    case 0:
+        if (impulse_phase < impulseBuffer.getNumSamples())
+        {
+            s = impulseBuffer.getSample(0, impulse_phase);
+            impulse_phase += (note_in_hertz * 44100.f / 440.f) / sampleRate;
+        }
+        break;
+    case 1:
+        s = 2. * random.nextFloat() - 1.;
+        break;
+    case 2:
+        s = impulse_phase <= 1;
+        impulse_phase++;
+        break;
+    default:
+        break;
+    }
+
+
     return s * impulse_vol;
-    //float n = 2. * random.nextFloat() - 1.;
-    //return n * impulse_vol;
 }
 
 float CoolSnare::get_noise()
