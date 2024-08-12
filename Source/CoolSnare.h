@@ -10,6 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "HigherOrderFilter.h"
 #include "CircularBuffer.h"
 
 class CoolSnare
@@ -39,7 +40,9 @@ private:
     float vel;
     CircularBuffer head;
 
-    juce::dsp::IIR::Filter<float> lp, peak, hp, noisepeak;
+    juce::dsp::IIR::Filter<float> lp, peak, noisepeak;
+
+    HigherOrderFilter hp;
 
     juce::Random random;
 
@@ -48,7 +51,7 @@ private:
     juce::AudioProcessorValueTreeState& apvts;
 
     // todo: make this not stupid
-    float c_hpFreq, c_lpFreq;
+    float c_hpFreq, c_lpFreq, c_order;
 
     // parameters
     std::atomic<float>
@@ -60,6 +63,7 @@ private:
         * impulseMix,
         * impulseType,
         * hpFreq,
+        * hpOrder,
         * lpFreq,
         * accent,
         * peakFreq,
@@ -74,6 +78,7 @@ private:
         noiseRelease = apvts.getRawParameterValue("noiseRelease");
 
         hpFreq = apvts.getRawParameterValue("hpFreq");
+        hpOrder = apvts.getRawParameterValue("hpOrder");
         lpFreq = apvts.getRawParameterValue("lpFreq");
         peakFreq = apvts.getRawParameterValue("peakFreq");
         peakQ = apvts.getRawParameterValue("peakQ");
