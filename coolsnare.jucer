@@ -15,9 +15,9 @@
       <FILE id="dHIUcX" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
       <FILE id="GWxsxu" name="CoolSnare.cpp" compile="1" resource="0" file="Source/CoolSnare.cpp"/>
+      <FILE id="ocmeb5" name="EQComponent.cpp" compile="1" resource="0" file="Source/EQComponent.cpp"/>
+      <FILE id="xNzWbb" name="EQComponent.h" compile="0" resource="0" file="Source/EQComponent.h"/>
       <FILE id="gvY2hB" name="CoolSnare.h" compile="0" resource="0" file="Source/CoolSnare.h"/>
-      <FILE id="zNOaDs" name="HigherOrderFilter.cpp" compile="1" resource="0"
-            file="Source/HigherOrderFilter.cpp"/>
       <FILE id="VYVMB0" name="HigherOrderFilter.h" compile="0" resource="0"
             file="Source/HigherOrderFilter.h"/>
       <FILE id="BPFc3l" name="PluginEditor.cpp" compile="1" resource="0"

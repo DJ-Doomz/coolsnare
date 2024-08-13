@@ -19,7 +19,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("noiseMix", "noiseMix", 0., 2., 0.17));
     params.add(std::make_unique<juce::AudioParameterFloat>("impulseMix", "impulseMix", 0., 2., 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("noiseRelease", "noiseRelease", 0., 1., .43));
-    params.add(std::make_unique<juce::AudioParameterFloat>("hpFreq", "hpFreq", 10., 1500, 190.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("hpFreq", "hpFreq", GRAPH_MIN, GRAPH_MAX, 190.));
     params.add(std::make_unique<juce::AudioParameterInt>("hpOrder", "hpOrder", 1, 4, 1));
     params.add(std::make_unique<juce::AudioParameterFloat>("lpFreq", "lpFreq", 0., 1., .06));
     params.add(std::make_unique<juce::AudioParameterFloat>("peakFreq", "peakFreq", 0., 1., 1.));
@@ -188,8 +188,8 @@ bool CoolsnareAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* CoolsnareAudioProcessor::createEditor()
 {
-    return new juce::GenericAudioProcessorEditor(*this);
-    //return new CoolsnareAudioProcessorEditor (*this);
+    //return new juce::GenericAudioProcessorEditor(*this);
+    return new CoolsnareAudioProcessorEditor (*this, apvts);
 }
 
 //==============================================================================

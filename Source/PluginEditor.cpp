@@ -10,12 +10,14 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-CoolsnareAudioProcessorEditor::CoolsnareAudioProcessorEditor (CoolsnareAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+CoolsnareAudioProcessorEditor::CoolsnareAudioProcessorEditor (CoolsnareAudioProcessor& p, juce::AudioProcessorValueTreeState& a)
+    : AudioProcessorEditor (&p), audioProcessor (p), apvts(a),
+    headEq(a)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (400, 300);
+    addAndMakeVisible(headEq);
 }
 
 CoolsnareAudioProcessorEditor::~CoolsnareAudioProcessorEditor()
@@ -34,6 +36,6 @@ void CoolsnareAudioProcessorEditor::paint (juce::Graphics& g)
 
 void CoolsnareAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    auto lb = getLocalBounds();
+    headEq.setBounds(lb);
 }
