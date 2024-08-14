@@ -76,12 +76,17 @@ public:
 private:
     void updateFilters();
 
+    void init();
+
     juce::AudioProcessorValueTreeState& apvts;
     EQNode hp, peak, lp;
     // eq component has its own copies of the filters for drawing
     HigherOrderFilter f_lp, f_hp;
     juce::dsp::IIR::Filter<float> f_peak;
     float sampleRate;
+
+    const float NUM_POINTS = 40;
+    std::vector<float> plotting_freqs;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQComponent)

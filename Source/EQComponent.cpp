@@ -40,6 +40,8 @@ EQComponent::EQComponent(juce::AudioProcessorValueTreeState& a,
     f_lp.setType(HigherOrderFilter::LP);
     f_hp.prepare(Monospec);
     f_hp.setType(HigherOrderFilter::HP);
+
+    init();
 }
 
 EQComponent::~EQComponent()
@@ -56,14 +58,22 @@ void EQComponent::paint (juce::Graphics& g)
     updateFilters();
     juce::Path responsePath;
     responsePath.startNewSubPath(0, h);
-    const float pathpoints = 40;
-    for (int i = 0; i < pathpoints; i++)
+    
+    std::vector<float> plot_freqs = plotting_freqs;
+
+    plot_freqs.push_back(hp.freq.convertFrom0to1(hp.freq.getValue()));
+    plot_freqs.push_back(lp.freq.convertFrom0to1(lp.freq.getValue()));
+    plot_freqs.push_back(peak.freq.convertFrom0to1(peak.freq.getValue()));
+
+    std::sort(plot_freqs.begin(), plot_freqs.end());
+
+    for (auto freq = plot_freqs.begin(); freq != plot_freqs.end(); freq++)
     {
-        float freq = juce::mapToLog10(i / pathpoints, GRAPH_MIN, GRAPH_MAX);
-        float x = juce::jmap(float(i), 0.f, pathpoints, 0.f, float(w));
-        float y = f_peak.coefficients.get()->getMagnitudeForFrequency(freq, sampleRate);
-        y *= f_hp.magnitude(freq);
-        y *= f_lp.magnitude(freq);
+        
+        float x = juce::mapFromLog10(*freq, GRAPH_MIN, GRAPH_MAX)*w; //  juce::jmap(float(i), 0.f, pathpoints, 0.f, float(w));
+        float y = f_peak.coefficients.get()->getMagnitudeForFrequency(*freq, sampleRate);
+        y *= f_hp.magnitude(*freq);
+        y *= f_lp.magnitude(*freq);
         y = juce::Decibels::gainToDecibels(y);
         y = juce::jmap(y, -24.f, 24.f, float(h), 0.f);
         responsePath.lineTo(x, y);
@@ -141,6 +151,15 @@ void EQComponent::updateFilters()
     f_hp.setCutoffFrequency(hp.freq.convertFrom0to1(hp.freq.getValue()));
     f_hp.setResonance(lp.q.convertFrom0to1(hp.q.getValue()));
     f_hp.setOrder(lp.gainOrOrder.convertFrom0to1(hp.gainOrOrder.getValue()));
+}
+
+void EQComponent::init()
+{
+    for (int i = 0; i < NUM_POINTS; i++)
+    {
+        float freq = juce::mapToLog10(i / NUM_POINTS, GRAPH_MIN, GRAPH_MAX);
+        plotting_freqs.push_back(freq);
+    }
 }
 
 EQNode::EQNode(NodeType t, juce::RangedAudioParameter& f, juce::RangedAudioParameter& g, juce::RangedAudioParameter& inq) :
