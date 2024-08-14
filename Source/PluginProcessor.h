@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "CoolSnare.h"
+#include "Globals.h"
 
 //==============================================================================
 /**

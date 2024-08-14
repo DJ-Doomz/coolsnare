@@ -40,9 +40,9 @@ private:
     float vel;
     CircularBuffer head;
 
-    juce::dsp::IIR::Filter<float> lp, peak, noisepeak;
+    juce::dsp::IIR::Filter<float> peak, noisepeak;
 
-    HigherOrderFilter hp;
+    HigherOrderFilter lp, hp;
 
     juce::Random random;
 
@@ -64,7 +64,10 @@ private:
         * impulseType,
         * hpFreq,
         * hpOrder,
+        * hpRes,
         * lpFreq,
+        * lpOrder,
+        * lpRes,
         * accent,
         * peakFreq,
         * peakQ,
@@ -76,10 +79,12 @@ private:
         headMix = apvts.getRawParameterValue("headMix");
         noiseMix = apvts.getRawParameterValue("noiseMix");
         noiseRelease = apvts.getRawParameterValue("noiseRelease");
-
         hpFreq = apvts.getRawParameterValue("hpFreq");
         hpOrder = apvts.getRawParameterValue("hpOrder");
+        hpRes = apvts.getRawParameterValue("hpRes");
         lpFreq = apvts.getRawParameterValue("lpFreq");
+        lpOrder = apvts.getRawParameterValue("lpOrder");
+        lpRes = apvts.getRawParameterValue("lpRes");
         peakFreq = apvts.getRawParameterValue("peakFreq");
         peakQ = apvts.getRawParameterValue("peakQ");
         peakGain = apvts.getRawParameterValue("peakGain");

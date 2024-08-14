@@ -12,10 +12,10 @@
 
 #include <JuceHeader.h>
 #include "HigherOrderFilter.h"
+#include "Globals.h"
 
 //==============================================================================
-static const float GRAPH_MIN = 20.f;
-static const float GRAPH_MAX = 20000.f;
+
 
 class EQNode : public juce::Component
 {
@@ -26,7 +26,7 @@ public:
         HP,
     };
 
-    EQNode(NodeType t, juce::RangedAudioParameter& f, juce::RangedAudioParameter& g);
+    EQNode(NodeType t, juce::RangedAudioParameter& f, juce::RangedAudioParameter& g, juce::RangedAudioParameter& inq);
 
 
     void paint(juce::Graphics& g) override;
@@ -36,32 +36,52 @@ public:
     void mouseUp(const juce::MouseEvent&) override;
     /** @internal */
     void mouseDrag(const juce::MouseEvent&) override;
-    /** @internal */
 
-private:
-    juce::RangedAudioParameter& freq;
-    juce::RangedAudioParameter& gain;
-
-    NodeType type;
+    void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
+    
+    //void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
 
     float screenx, screeny;
     bool dragging;
+    juce::RangedAudioParameter& freq;
+    juce::RangedAudioParameter& q;
+    juce::RangedAudioParameter& gainOrOrder; // gain if peak filter, order if hp/lp
+
+private:
+    
+    NodeType type;
 };
 
 
 class EQComponent  : public juce::Component
 {
 public:
-    EQComponent(juce::AudioProcessorValueTreeState&);
+    EQComponent(juce::AudioProcessorValueTreeState&,
+        juce::RangedAudioParameter& hpf, juce::RangedAudioParameter& hpr, juce::RangedAudioParameter& hpq,
+        juce::RangedAudioParameter& pf, juce::RangedAudioParameter& pr, juce::RangedAudioParameter& pq, 
+        juce::RangedAudioParameter& lpf, juce::RangedAudioParameter& lpr, juce::RangedAudioParameter& lpq);
     ~EQComponent() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
 
-    
+    /** @internal */
+    void mouseDown(const juce::MouseEvent&) override;
+    /** @internal */
+    void mouseUp(const juce::MouseEvent&) override;
+    /** @internal */
+    void mouseDrag(const juce::MouseEvent&) override;
+
+    void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
 private:
+    void updateFilters();
+
     juce::AudioProcessorValueTreeState& apvts;
-    EQNode hp;
+    EQNode hp, peak, lp;
+    // eq component has its own copies of the filters for drawing
+    HigherOrderFilter f_lp, f_hp;
+    juce::dsp::IIR::Filter<float> f_peak;
+    float sampleRate;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQComponent)

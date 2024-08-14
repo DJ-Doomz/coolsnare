@@ -5,24 +5,25 @@
               defines="JUCE_VST3_EMULATE_MIDI_CC_WITH_PARAMETERS=0">
   <MAINGROUP id="fGS04E" name="coolsnare">
     <GROUP id="{2FB9A29A-1613-4C8E-0926-ACF0B01B25BF}" name="Data">
+      <FILE id="ocmeb5" name="EQComponent.cpp" compile="1" resource="0" file="Source/EQComponent.cpp"/>
       <FILE id="HhxXCg" name="Hitbeads2.wav" compile="0" resource="1" file="Data/Hitbeads2.wav"/>
     </GROUP>
     <GROUP id="{DCFB67DC-5A15-C981-D7FB-A0F9F2BCFB36}" name="Source">
+      <FILE id="xNzWbb" name="EQComponent.h" compile="0" resource="0" file="Source/EQComponent.h"/>
+      <FILE id="m7WB2U" name="Globals.h" compile="0" resource="0" file="Source/Globals.h"/>
+      <FILE id="TrYDnl" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="VKQ2He" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="yJGum7" name="CircularBuffer.h" compile="0" resource="0"
             file="Source/CircularBuffer.h"/>
       <FILE id="dHIUcX" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="GWxsxu" name="CoolSnare.cpp" compile="1" resource="0" file="Source/CoolSnare.cpp"/>
-      <FILE id="ocmeb5" name="EQComponent.cpp" compile="1" resource="0" file="Source/EQComponent.cpp"/>
-      <FILE id="xNzWbb" name="EQComponent.h" compile="0" resource="0" file="Source/EQComponent.h"/>
+      <FILE id="BPFc3l" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
       <FILE id="gvY2hB" name="CoolSnare.h" compile="0" resource="0" file="Source/CoolSnare.h"/>
       <FILE id="VYVMB0" name="HigherOrderFilter.h" compile="0" resource="0"
             file="Source/HigherOrderFilter.h"/>
-      <FILE id="BPFc3l" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="TrYDnl" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="GWxsxu" name="CoolSnare.cpp" compile="1" resource="0" file="Source/CoolSnare.cpp"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>

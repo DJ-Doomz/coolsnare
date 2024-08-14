@@ -23,7 +23,8 @@ CoolSnare::CoolSnare(juce::AudioProcessorValueTreeState& v): apvts(v)
     c_order = 1;
     init_params();
     c_hpFreq = c_lpFreq = -1;
-    hp.setType(juce::dsp::StateVariableFilter::StateVariableFilterType::highPass);
+    hp.setType(HigherOrderFilter::HP);
+    lp.setType(HigherOrderFilter::LP);
     updateFilters();
 
     juce::WavAudioFormat wavFormat;
@@ -194,12 +195,11 @@ void CoolSnare::do_resonance()
     if (isnan(hs) || isinf(hs))
     {
         hs = 0;
-        lp.reset();
     }
 
     hs = juce::jlimit(-1.f, 1.f, hs);
 
-    hs = lp.processSample(hp.processSample(hs));
+    hs = lp.processSample(peak.processSample(hp.processSample(hs)));
 
     head.put(hs);
 }
@@ -220,11 +220,17 @@ void CoolSnare::updateFilters()
     }
 
     // lowpass opens up when velocity goes up
-    float a = vel* vel* vel* vel * *accent;
-    float f =  (*lpFreq + a) * sampleRate / 2.;
-    c_lpFreq = juce::jlimit(10.f, (sampleRate / 2.f) - 10.f, smoothit(c_lpFreq, f, .9));
+    float a = 0.;// vel* vel* vel* vel** accent;
+    
+    if (*lpFreq != c_lpFreq)
+    {
+        c_lpFreq = *lpFreq;
+        float f = juce::jlimit(10.f, (sampleRate / 2.f) - 10.f, lpFreq->load());
+        lp.setCutoffFrequency(f);
+    }
 
-    lp.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, c_lpFreq);
+    peak.coefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, *peakFreq, *peakQ, juce::Decibels::decibelsToGain(peakGain->load()));
+
     
     //if (*lpFreq != c_lpFreq)
     //{
