@@ -11,6 +11,13 @@
       <FILE id="xNzWbb" name="EQComponent.h" compile="0" resource="0" file="Source/EQComponent.h"/>
       <FILE id="m7WB2U" name="Globals.h" compile="0" resource="0" file="Source/Globals.h"/>
       <FILE id="ocmeb5" name="EQComponent.cpp" compile="1" resource="0" file="Source/EQComponent.cpp"/>
+      <FILE id="wgu4M4" name="myLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/myLookAndFeel.cpp"/>
+      <FILE id="xukz9v" name="myLookAndFeel.h" compile="0" resource="0" file="Source/myLookAndFeel.h"/>
+      <FILE id="VxQL8S" name="SensitiveSlider.h" compile="0" resource="0"
+            file="Source/SensitiveSlider.h"/>
+      <FILE id="bc0yMj" name="SliderAndLabel.h" compile="0" resource="0"
+            file="Source/SliderAndLabel.h"/>
       <FILE id="TrYDnl" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="VKQ2He" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

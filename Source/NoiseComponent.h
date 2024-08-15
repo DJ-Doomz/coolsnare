@@ -18,11 +18,10 @@
 class NoiseComponent  : public juce::Component
 {
 public:
-    NoiseComponent()
+    NoiseComponent(juce::AudioProcessorValueTreeState& a) :
+        apvts(a)
     {
-        // In your constructor, you should add any child components, and
-        // initialise any special settings that your component needs.
-
+        
     }
 
     ~NoiseComponent() override
@@ -31,22 +30,11 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        /* This demo code just fills the component's background and
-           draws some placeholder text to get you started.
-
-           You should replace everything in this method with your own
-           drawing code..
-        */
-
-        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
-        g.setColour (juce::Colours::grey);
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-        g.setColour (juce::Colours::white);
-        g.setFont (juce::FontOptions (14.0f));
-        g.drawText ("NoiseComponent", getLocalBounds(),
-                    juce::Justification::centred, true);   // draw some placeholder text
+        auto lb = getLocalBounds();
+        auto header = lb.removeFromTop(HEADER_SPACE);
+        g.setColour(juce::Colours::white);
+        g.drawText("Noise", header,
+            juce::Justification::centred, true);   // draw some placeholder text
     }
 
     void resized() override
@@ -57,5 +45,6 @@ public:
     }
 
 private:
+    juce::AudioProcessorValueTreeState& apvts;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoiseComponent)
 };

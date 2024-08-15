@@ -14,3 +14,4 @@ static const float RES_MAX = 8.2f;
 static const float GRAPH_MIN = 20.f;
 static const float GRAPH_MAX = 20000.f;
 
+static const float HEADER_SPACE = 30.f;

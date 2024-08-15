@@ -10,7 +10,9 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "EQComponent.h"
+#include "ImpulseComponent.h"
+#include "HeadComponent.h"
+#include "NoiseComponent.h"
 
 //==============================================================================
 /**
@@ -30,7 +32,10 @@ private:
     // access the processor object that created it.
     CoolsnareAudioProcessor& audioProcessor;
     juce::AudioProcessorValueTreeState& apvts;
-    EQComponent headEq;
+
+    HeadComponent headComponent;
+    ImpulseComponent impulseComponent;
+    NoiseComponent noiseComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoolsnareAudioProcessorEditor)
 };

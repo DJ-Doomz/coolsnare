@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "EQComponent.h"
 
 //==============================================================================
 /*
@@ -18,11 +19,13 @@
 class HeadComponent  : public juce::Component
 {
 public:
-    HeadComponent()
+    HeadComponent(juce::AudioProcessorValueTreeState& a) :
+        apvts(a),
+        headEq(a, *a.getParameter("hpFreq"), *a.getParameter("hpOrder"), *a.getParameter("hpRes"),
+            *a.getParameter("peakFreq"), *a.getParameter("peakGain"), *a.getParameter("peakQ"),
+            *a.getParameter("lpFreq"), *a.getParameter("lpOrder"), *a.getParameter("lpRes"))
     {
-        // In your constructor, you should add any child components, and
-        // initialise any special settings that your component needs.
-
+        addAndMakeVisible(headEq);
     }
 
     ~HeadComponent() override
@@ -31,31 +34,25 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        /* This demo code just fills the component's background and
-           draws some placeholder text to get you started.
-
-           You should replace everything in this method with your own
-           drawing code..
-        */
-
-        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
-        g.setColour (juce::Colours::grey);
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
+        auto lb = getLocalBounds();
+        auto header = lb.removeFromTop(HEADER_SPACE);
         g.setColour (juce::Colours::white);
-        g.setFont (juce::FontOptions (14.0f));
-        g.drawText ("HeadComponent", getLocalBounds(),
+        g.drawText ("Head", header,
                     juce::Justification::centred, true);   // draw some placeholder text
     }
 
     void resized() override
     {
-        // This method is where you should set the bounds of any child
-        // components that your component contains..
-
+        auto lb = getLocalBounds();
+        lb.removeFromTop(HEADER_SPACE);
+        auto eqRect = lb.removeFromTop(150);
+        headEq.setBounds(eqRect);
     }
 
 private:
+    juce::AudioProcessorValueTreeState& apvts;
+    EQComponent headEq;
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HeadComponent)
 };

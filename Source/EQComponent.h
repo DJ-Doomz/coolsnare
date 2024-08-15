@@ -93,7 +93,7 @@ private:
     juce::dsp::IIR::Filter<float> f_peak;
     float sampleRate;
 
-    const float NUM_POINTS = 70;
+    const float NUM_POINTS = 40;
     std::vector<float> plotting_freqs;
     
 
