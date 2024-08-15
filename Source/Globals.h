@@ -8,8 +8,8 @@
   ==============================================================================
 */
 #pragma once
-static const float RES_MIN = 0.01f;
-static const float RES_MAX = 8.f;
+static const float RES_MIN = 0.2f;
+static const float RES_MAX = 8.2f;
 
 static const float GRAPH_MIN = 20.f;
 static const float GRAPH_MAX = 20000.f;

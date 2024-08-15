@@ -57,7 +57,6 @@ void EQComponent::paint (juce::Graphics& g)
     // paint response curves
     updateFilters();
     juce::Path responsePath;
-    responsePath.startNewSubPath(0, h);
     
     std::vector<float> plot_freqs = plotting_freqs;
 
@@ -67,15 +66,12 @@ void EQComponent::paint (juce::Graphics& g)
 
     std::sort(plot_freqs.begin(), plot_freqs.end());
 
+    float starty = magnitudeToScreen(magnitude(20));
+    responsePath.startNewSubPath(0, starty);
     for (auto freq = plot_freqs.begin(); freq != plot_freqs.end(); freq++)
     {
-        
         float x = juce::mapFromLog10(*freq, GRAPH_MIN, GRAPH_MAX)*w; //  juce::jmap(float(i), 0.f, pathpoints, 0.f, float(w));
-        float y = f_peak.coefficients.get()->getMagnitudeForFrequency(*freq, sampleRate);
-        y *= f_hp.magnitude(*freq);
-        y *= f_lp.magnitude(*freq);
-        y = juce::Decibels::gainToDecibels(y);
-        y = juce::jmap(y, -24.f, 24.f, float(h), 0.f);
+        float y = magnitudeToScreen(magnitude(*freq));
         responsePath.lineTo(x, y);
     }
 
@@ -111,10 +107,17 @@ void EQComponent::mouseDown(const juce::MouseEvent& e)
     }
 
     closest->mouseDown(e);
+    if(closest->dragging)
+    {
+        setMouseCursor(juce::MouseCursor::NoCursor);
+        updateMouseCursor();
+    }
+
 }
 
 void EQComponent::mouseUp(const juce::MouseEvent& e)
 {
+    setMouseCursor(juce::MouseCursor::NormalCursor);
     hp.mouseUp(e);
     peak.mouseUp(e);
     lp.mouseUp(e);
@@ -125,6 +128,15 @@ void EQComponent::mouseDrag(const juce::MouseEvent& e)
     hp.mouseDrag(e);
     peak.mouseDrag(e);
     lp.mouseDrag(e);
+
+    repaint();
+}
+
+void EQComponent::mouseDoubleClick(const juce::MouseEvent& e)
+{
+    hp.mouseDoubleClick(e);
+    peak.mouseDoubleClick(e);
+    lp.mouseDoubleClick(e);
 
     repaint();
 }
@@ -162,6 +174,19 @@ void EQComponent::init()
     }
 }
 
+float EQComponent::magnitude(float freq)
+{
+    return f_hp.magnitude(freq) * f_peak.coefficients.get()->getMagnitudeForFrequency(freq, sampleRate) * f_lp.magnitude(freq);
+}
+
+float EQComponent::magnitudeToScreen(float m)
+{
+    auto h = getLocalBounds().getHeight();
+    float y = juce::Decibels::gainToDecibels(m);
+    y = juce::jmap(y, -24.f, 24.f, float(h), 0.f);
+    return y;
+}
+
 EQNode::EQNode(NodeType t, juce::RangedAudioParameter& f, juce::RangedAudioParameter& g, juce::RangedAudioParameter& inq) :
     freq(f),
     gainOrOrder(g),
@@ -183,6 +208,7 @@ void EQNode::paint(juce::Graphics& g)
     float freqx = juce::jmap(freq.getValue(), GRAPH_MIN, GRAPH_MAX);
     freqx = juce::mapFromLog10(freqx, GRAPH_MIN, GRAPH_MAX);
     screenx = juce::jmap(freqx, 0.f, float(w));
+    auto point = juce::Point<float>(screenx, screeny);
 
     screeny = h / 2.;
     if (type == NodeType::PEAK)
@@ -191,41 +217,40 @@ void EQNode::paint(juce::Graphics& g)
     }
     else
     {
-        screeny = juce::jmap(q.getValue(), 0.f, 1.f, float(h), 0.f);
+        screeny = juce::jmap(pow(q.getValue(), 1.f/3.5f), 0.f, 1.f, float(h), 0.f);
     }
 
     if (dragging)
-        g.setColour(juce::Colours::rebeccapurple);
+    {
+        g.setColour(juce::Colours::white.withAlpha(.3f));
+        juce::Rectangle<float> outline(20, 20);
+        g.fillEllipse(outline.withCentre(point));
+        g.setColour(juce::Colours::aqua);
+    }
     else
+    {
         g.setColour(juce::Colours::white);
+    }
 
     juce::Rectangle<float> circ(10, 10);
-    g.fillEllipse(circ.withCentre(juce::Point<float>(screenx, screeny)));
+    g.fillEllipse(circ.withCentre(point));
 }
 
 void EQNode::mouseDown(const juce::MouseEvent& e)
 {
     auto p = e.getPosition();
     // detect if the mouse was over this when clicked
-    if (p.getDistanceFrom(juce::Point<int>(screenx, screeny)) < 6 && !dragging)
+    if (p.getDistanceFrom(juce::Point<int>(screenx, screeny)) < range && !dragging)
     {
         dragging = true;
-        //freq.beginChangeGesture();
-        //gain.beginChangeGesture();
         setMouseCursor(juce::MouseCursor::NoCursor);
+        updateMouseCursor();
         mouseDrag(e);
     }
 }
 
 void EQNode::mouseUp(const juce::MouseEvent& e)
 {
-    if(dragging)
-    {
-        //freq.endChangeGesture();
-        //gain.endChangeGesture();
-        setMouseCursor(juce::MouseCursor::NormalCursor);
-    }
-
     dragging = false;
     repaint();
 }
@@ -253,8 +278,25 @@ void EQNode::mouseDrag(const juce::MouseEvent& e)
         else
         {
             float newq = juce::jmap(float(p.getY()), float(h), 0.f, 0.f, 1.f);
+            // adjust q so that .707 is near the middle
+            newq = juce::jlimit(0.f, 1.f, newq);
+            newq = pow(newq, 3.5f);
             q.setValueNotifyingHost(newq);
         }
+
+        repaint();
+    }
+}
+
+void EQNode::mouseDoubleClick(const juce::MouseEvent& e)
+{
+    auto p = e.getPosition();
+    // detect if the mouse was over this when clicked
+    if (p.getDistanceFrom(juce::Point<int>(screenx, screeny)) < range)
+    {
+        freq.setValueNotifyingHost(freq.getDefaultValue());
+        q.setValueNotifyingHost(q.getDefaultValue());
+        gainOrOrder.setValueNotifyingHost(gainOrOrder.getDefaultValue());
 
         repaint();
     }
@@ -264,7 +306,7 @@ void EQNode::mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDet
 {
     auto p = e.getPosition();
     // detect if the mouse was over this when clicked
-    if (p.getDistanceFrom(juce::Point<int>(screenx, screeny)) < 6)
+    if (p.getDistanceFrom(juce::Point<int>(screenx, screeny)) < range)
     {
         float cv;
         juce::RangedAudioParameter* p = nullptr;

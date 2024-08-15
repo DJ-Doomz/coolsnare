@@ -37,15 +37,17 @@ public:
     /** @internal */
     void mouseDrag(const juce::MouseEvent&) override;
 
+    void mouseDoubleClick(const juce::MouseEvent&) override;
+
     void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
     
-    //void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
-
     float screenx, screeny;
     bool dragging;
     juce::RangedAudioParameter& freq;
     juce::RangedAudioParameter& q;
     juce::RangedAudioParameter& gainOrOrder; // gain if peak filter, order if hp/lp
+
+    const float range = 10;
 
 private:
     
@@ -72,11 +74,17 @@ public:
     /** @internal */
     void mouseDrag(const juce::MouseEvent&) override;
 
+    void mouseDoubleClick(const juce::MouseEvent&) override;
+
     void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
 private:
     void updateFilters();
 
     void init();
+
+    float magnitude(float freq);
+
+    float magnitudeToScreen(float m);
 
     juce::AudioProcessorValueTreeState& apvts;
     EQNode hp, peak, lp;
@@ -85,7 +93,7 @@ private:
     juce::dsp::IIR::Filter<float> f_peak;
     float sampleRate;
 
-    const float NUM_POINTS = 40;
+    const float NUM_POINTS = 70;
     std::vector<float> plotting_freqs;
     
 

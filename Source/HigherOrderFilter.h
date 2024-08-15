@@ -12,6 +12,8 @@
 #include <JuceHeader.h>
 /*
 I'm sure this is not the correct way to do this but whatever it sounds cool
+using SVF implementation for actual filtering because supposedly it is faster and better for automation
+IIR filter for calculating magnitudes (hopefully they're similar enough no one will notice)
 */
 class HigherOrderFilter
 {
@@ -27,6 +29,7 @@ public:
         c_freq(5000),
         c_res(.7),
         type(LP),
+        dirty(true),
         sampleRate(44100){};
 
     ~HigherOrderFilter() {};
@@ -34,18 +37,28 @@ public:
     void setType(FilterType t)
     {
         type = t;
+        dirty = true;
+        for (int i = 0; i < MAX_ORDER; i++)
+        {
+            if (type == LP)
+                filters[i].parameters.get()->type = juce::dsp::StateVariableFilter::StateVariableFilterType::lowPass;
+            else if (type == HP)
+                filters[i].parameters.get()->type = juce::dsp::StateVariableFilter::StateVariableFilterType::highPass;
+        }
         updateCoefficients();
     }
 
     void setCutoffFrequency(float f)
     {
         c_freq = f;
+        dirty = true;
         updateCoefficients();
     }
 
     void setResonance(float r)
     {
         c_res = r;
+        dirty = true;
         updateCoefficients();
     }
 
@@ -53,9 +66,7 @@ public:
     {
         for (int i = 0; i < MAX_ORDER; i++)
         {
-            filters[i].coefficients =
-                type == LP ? juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, c_freq, c_res) :
-                juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, c_freq, c_res);
+            filters[i].parameters.get()->setCutOffFrequency(sampleRate, c_freq, c_res);
         }
     }
 
@@ -91,19 +102,27 @@ public:
 
     float magnitude(double frequency)
     {
-        float m = 1.;
-        for (int i = 0; i < order; i++)
+        if (dirty)
         {
-            m *= filters[i].coefficients.get()->getMagnitudeForFrequency(frequency, sampleRate);
+            if (type == LP)
+                IIRfilter.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, c_freq, c_res);
+            else if(type == HP)
+                IIRfilter.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, c_freq, c_res);
+            dirty = false;
         }
-        return m;
+        float m = IIRfilter.coefficients.get()->getMagnitudeForFrequency(frequency, sampleRate);
+
+        return pow(m, order);
     }
 
+
 private:
-    juce::dsp::IIR::Filter<float> filters[MAX_ORDER];
+    juce::dsp::StateVariableFilter::Filter<float> filters[MAX_ORDER];
+    juce::dsp::IIR::Filter<float> IIRfilter;
     FilterType type;
     float c_freq;
     float c_res;
     double sampleRate;
     int order;
+    bool dirty;
 };
