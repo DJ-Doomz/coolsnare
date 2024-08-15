@@ -45,7 +45,7 @@ public:
     {
         auto lb = getLocalBounds();
         lb.removeFromTop(HEADER_SPACE);
-        auto eqRect = lb.removeFromTop(150);
+        auto eqRect = lb.removeFromTop(EQ_HEIGHT);
         headEq.setBounds(eqRect);
     }
 

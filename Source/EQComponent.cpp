@@ -213,11 +213,14 @@ void EQNode::paint(juce::Graphics& g)
     screeny = h / 2.;
     if (type == NodeType::PEAK)
     {
-        screeny = juce::jmap(gainOrOrder.getValue(), float(h), 0.f);
+        float g = gainOrOrder.convertFrom0to1(gainOrOrder.getValue());
+        screeny = juce::jmap(g, GAIN_MIN, GAIN_MAX, float(h), 0.f);
     }
     else
     {
-        screeny = juce::jmap(pow(q.getValue(), 1.f/3.5f), 0.f, 1.f, float(h), 0.f);
+        float r = q.convertFrom0to1(q.getValue());
+        r = juce::jmap(r, RES_MIN, RES_MAX, 0.f, 1.f);
+        screeny = juce::jmap(pow(r, 1.f/3.5f), 0.f, 1.f, float(h), 0.f);
     }
 
     if (dragging)
@@ -272,15 +275,19 @@ void EQNode::mouseDrag(const juce::MouseEvent& e)
 
         if (type == NodeType::PEAK)
         {
-            float newg = juce::jmap(float(p.getY()), float(h), 0.f, 0.f, 1.f);
+            float newg = juce::jmap(float(p.getY()), float(h), 0.f, GAIN_MIN, GAIN_MAX);
+            newg = gainOrOrder.convertTo0to1(newg);
             gainOrOrder.setValueNotifyingHost(newg);
         }
         else
         {
             float newq = juce::jmap(float(p.getY()), float(h), 0.f, 0.f, 1.f);
-            // adjust q so that .707 is near the middle
             newq = juce::jlimit(0.f, 1.f, newq);
             newq = pow(newq, 3.5f);
+            // adjust q so that .707 is near the middle
+            newq = juce::jmap(newq, 0.f, 1.f, RES_MIN, RES_MAX);
+            newq = q.convertTo0to1(newq);
+            
             q.setValueNotifyingHost(newq);
         }
 

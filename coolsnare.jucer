@@ -30,6 +30,8 @@
       <FILE id="gvY2hB" name="CoolSnare.h" compile="0" resource="0" file="Source/CoolSnare.h"/>
       <FILE id="VYVMB0" name="HigherOrderFilter.h" compile="0" resource="0"
             file="Source/HigherOrderFilter.h"/>
+      <FILE id="A5wGGO" name="MyEQ.cpp" compile="1" resource="0" file="Source/MyEQ.cpp"/>
+      <FILE id="lGE0gR" name="MyEQ.h" compile="0" resource="0" file="Source/MyEQ.h"/>
       <FILE id="csnCFU" name="HeadComponent.h" compile="0" resource="0" file="Source/HeadComponent.h"/>
       <FILE id="fhPDsy" name="ImpulseComponent.h" compile="0" resource="0"
             file="Source/ImpulseComponent.h"/>

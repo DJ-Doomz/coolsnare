@@ -20,17 +20,26 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("impulseMix", "impulseMix", 0., 2., 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("noiseRelease", "noiseRelease", 0., 1., .43));
     params.add(std::make_unique<juce::AudioParameterFloat>("hpFreq", "hpFreq", GRAPH_MIN, GRAPH_MAX, 190.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("hpRes", "hpRes", juce::NormalisableRange<float> { RES_MIN, RES_MAX, .001f, 1.f}, .707));
+    params.add(std::make_unique<juce::AudioParameterFloat>("hpRes", "hpRes", juce::NormalisableRange<float> { RES_MIN, .708, .001f, 1.f}, .708));
     params.add(std::make_unique<juce::AudioParameterInt>("hpOrder", "hpOrder", 1, 4, 1));
     params.add(std::make_unique<juce::AudioParameterFloat>("lpFreq", "lpFreq", GRAPH_MIN, GRAPH_MAX, 3000.f));
-    params.add(std::make_unique<juce::AudioParameterFloat>("lpRes", "lpRes", RES_MIN, RES_MAX, .707));
+    params.add(std::make_unique<juce::AudioParameterFloat>("lpRes", "lpRes", RES_MIN, .708, .708));
     params.add(std::make_unique<juce::AudioParameterInt>("lpOrder", "lpOrder", 1, 4, 1));
     params.add(std::make_unique<juce::AudioParameterFloat>("peakFreq", "peakFreq", GRAPH_MIN, GRAPH_MAX, 500.));
-    params.add(std::make_unique<juce::AudioParameterFloat>("peakGain", "peakGain", -24., 24., 0.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("peakGain", "peakGain", GAIN_MIN, 0., 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("peakQ", "peakQ", RES_MIN, RES_MAX, 1.));
     params.add(std::make_unique<juce::AudioParameterFloat>("accent", "accent", 0., 1., 0.));
     params.add(std::make_unique<juce::AudioParameterChoice>("impulseType", "impulseType", juce::StringArray({ "sample", "noise", "click"}), 0));
-    
+
+    params.add(std::make_unique<juce::AudioParameterFloat>("noisehpFreq",   "noisehpFreq", GRAPH_MIN, GRAPH_MAX, 190.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noisehpRes",    "noisehpRes", juce::NormalisableRange<float> { RES_MIN, RES_MAX, .001f, 1.f}, .707));
+    params.add(std::make_unique<juce::AudioParameterInt>(  "noisehpOrder",  "noisehpOrder", 1, 4, 1));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noiselpFreq",   "noiselpFreq", GRAPH_MIN, GRAPH_MAX, 3000.f));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noiselpRes",    "noiselpRes", RES_MIN, RES_MAX, .707));
+    params.add(std::make_unique<juce::AudioParameterInt>(  "noiselpOrder",  "noiselpOrder", 1, 4, 1));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noisepeakFreq", "noisepeakFreq", GRAPH_MIN, GRAPH_MAX, 500.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noisepeakGain", "noisepeakGain", GAIN_MIN, GAIN_MAX, 0.));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noisepeakQ",    "noisepeakQ", RES_MIN, RES_MAX, 1.));
     return params;
 }
 
