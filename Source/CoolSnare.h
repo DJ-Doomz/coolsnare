@@ -41,18 +41,13 @@ private:
     float vel;
     CircularBuffer head;
 
-    juce::dsp::IIR::Filter<float> peak, noisepeak;
-
-    HigherOrderFilter lp, hp;
+    MyEQ headEQ, noiseEQ;
 
     juce::Random random;
 
     juce::AudioBuffer<float> synthBuffer,
         impulseBuffer;
     juce::AudioProcessorValueTreeState& apvts;
-
-    // todo: make this not stupid
-    float c_hpFreq, c_lpFreq, c_order;
 
     // parameters
     std::atomic<float>
@@ -63,24 +58,6 @@ private:
         * headMix,
         * impulseMix,
         * impulseType,
-        * hpFreq,
-        * hpOrder,
-        * hpRes,
-        * lpFreq,
-        * lpOrder,
-        * lpRes,
-        * peakFreq,
-        * peakQ,
-        * peakGain,
-        * noisehpFreq,
-        * noisehpOrder,
-        * noisehpRes,
-        * noiselpFreq,
-        * noiselpOrder,
-        * noiselpRes,
-        * noisepeakFreq,
-        * noisepeakQ,
-        * noisepeakGain,
         * accent;
 
     void init_params() {
@@ -89,28 +66,6 @@ private:
         headMix = apvts.getRawParameterValue("headMix");
         noiseMix = apvts.getRawParameterValue("noiseMix");
         noiseRelease = apvts.getRawParameterValue( "noiseRelease");
-        noisehpFreq = apvts.getRawParameterValue(  "noisehpFreq");
-        noisehpOrder = apvts.getRawParameterValue( "noisehpOrder");
-        noisehpRes = apvts.getRawParameterValue(   "noisehpRes");
-        noiselpFreq = apvts.getRawParameterValue(  "noiselpFreq");
-        noiselpOrder = apvts.getRawParameterValue( "noiselpOrder");
-        noiselpRes = apvts.getRawParameterValue(   "noiselpRes");
-        noisepeakFreq = apvts.getRawParameterValue("noisepeakFreq");
-        noisepeakQ = apvts.getRawParameterValue(   "noisepeakQ");
-        noisepeakGain = apvts.getRawParameterValue("noisepeakGain");
-
-
-        hpFreq = apvts.getRawParameterValue("hpFreq");
-        hpOrder = apvts.getRawParameterValue("hpOrder");
-        hpRes = apvts.getRawParameterValue("hpRes");
-        lpFreq = apvts.getRawParameterValue("lpFreq");
-        lpOrder = apvts.getRawParameterValue("lpOrder");
-        lpRes = apvts.getRawParameterValue("lpRes");
-        peakFreq = apvts.getRawParameterValue("peakFreq");
-        peakQ = apvts.getRawParameterValue("peakQ");
-        peakGain = apvts.getRawParameterValue("peakGain");
-
-
         accent = apvts.getRawParameterValue("accent");
         impulseMix = apvts.getRawParameterValue("impulseMix");
         impulseType = apvts.getRawParameterValue("impulseType");
@@ -123,8 +78,6 @@ private:
 
     float sampleRate;
 
-    MyEQ headEQ, noiseEQ;
-    
     int minimumSubBlockSize = 32;
     bool subBlockSubdivisionIsStrict = false;
 };

@@ -19,6 +19,10 @@ CoolsnareAudioProcessorEditor::CoolsnareAudioProcessorEditor (CoolsnareAudioProc
     addAndMakeVisible(headComponent);
     addAndMakeVisible(impulseComponent);
     addAndMakeVisible(noiseComponent);
+
+    impulseComponent.addAttachment(apvts);
+    headComponent.addAttachment(apvts);
+    noiseComponent.addAttachment(apvts);
 }
 
 CoolsnareAudioProcessorEditor::~CoolsnareAudioProcessorEditor()

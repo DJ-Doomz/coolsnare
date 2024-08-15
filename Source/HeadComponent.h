@@ -13,6 +13,8 @@
 #include <JuceHeader.h>
 #include "EQComponent.h"
 
+typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+
 //==============================================================================
 /*
 */
@@ -26,6 +28,9 @@ public:
             *a.getParameter("lpFreq"), *a.getParameter("lpOrder"), *a.getParameter("lpRes"))
     {
         addAndMakeVisible(headEq);
+        addAndMakeVisible(delay);
+        addAndMakeVisible(mix);
+        addAndMakeVisible(feedback);
     }
 
     ~HeadComponent() override
@@ -47,12 +52,24 @@ public:
         lb.removeFromTop(HEADER_SPACE);
         auto eqRect = lb.removeFromTop(EQ_HEIGHT);
         headEq.setBounds(eqRect);
+        delay.setBounds(lb.removeFromLeft(lb.getWidth() / 3.));
+        feedback.setBounds(lb.removeFromLeft(lb.getWidth() / 2.));
+        mix.setBounds(lb);
+    }
+
+    void addAttachment(juce::AudioProcessorValueTreeState& apvts)
+    {
+        delayAttachment.reset(new SliderAttachment(apvts, "delay1", delay.getSlider()));
+        feedbackAttachment.reset(new SliderAttachment(apvts, "FB1", feedback.getSlider()));
+        mixAttachment.reset(new SliderAttachment(apvts, "headMix", mix.getSlider()));
     }
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
     EQComponent headEq;
 
+    SliderAndLabel delay{ "Delay" }, feedback{ "Feedback" }, mix{ "Mix" };
+    std::unique_ptr<SliderAttachment> delayAttachment, feedbackAttachment, mixAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HeadComponent)
 };

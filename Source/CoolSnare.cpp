@@ -13,25 +13,25 @@
 
 CoolSnare::CoolSnare(juce::AudioProcessorValueTreeState& v): apvts(v),
 headEQ(
-apvts.getRawParameterValue("hpFreq"),
-apvts.getRawParameterValue("hpOrder"),
-apvts.getRawParameterValue("hpRes"),
-apvts.getRawParameterValue("lpFreq"),
-apvts.getRawParameterValue("lpOrder"),
-apvts.getRawParameterValue("lpRes"),
-apvts.getRawParameterValue("peakFreq"),
-apvts.getRawParameterValue("peakQ"),
-apvts.getRawParameterValue("peakGain")),
+v.getRawParameterValue("hpFreq"),
+v.getRawParameterValue("hpOrder"),
+v.getRawParameterValue("hpRes"),
+v.getRawParameterValue("lpFreq"),
+v.getRawParameterValue("lpOrder"),
+v.getRawParameterValue("lpRes"),
+v.getRawParameterValue("peakFreq"),
+v.getRawParameterValue("peakQ"),
+v.getRawParameterValue("peakGain")),
 noiseEQ(
-apvts.getRawParameterValue("noisehpFreq"),
-apvts.getRawParameterValue("noisehpOrder"),
-apvts.getRawParameterValue("noisehpRes"),
-apvts.getRawParameterValue("noiselpFreq"),
-apvts.getRawParameterValue("noiselpOrder"),
-apvts.getRawParameterValue("noiselpRes"),
-apvts.getRawParameterValue("noisepeakFreq"),
-apvts.getRawParameterValue("noisepeakQ"),
-apvts.getRawParameterValue("noisepeakGain")
+v.getRawParameterValue("noisehpFreq"),
+v.getRawParameterValue("noisehpOrder"),
+v.getRawParameterValue("noisehpRes"),
+v.getRawParameterValue("noiselpFreq"),
+v.getRawParameterValue("noiselpOrder"),
+v.getRawParameterValue("noiselpRes"),
+v.getRawParameterValue("noisepeakFreq"),
+v.getRawParameterValue("noisepeakQ"),
+v.getRawParameterValue("noisepeakGain")
 )
 {
     sampleRate = 44100;
@@ -41,11 +41,7 @@ apvts.getRawParameterValue("noisepeakGain")
     noise_vol = 0;
     note_in_hertz = 440;
     vel = 0;
-    c_order = 1;
     init_params();
-    c_hpFreq = c_lpFreq = -1;
-    hp.setType(HigherOrderFilter::HP);
-    lp.setType(HigherOrderFilter::LP);
     updateFilters();
 
     juce::WavAudioFormat wavFormat;
@@ -150,14 +146,6 @@ void CoolSnare::prepareToPlay(double newRate, int samplePerBlock)
     spec_mono.maximumBlockSize = samplePerBlock;
     spec_mono.numChannels = 1;
     spec_mono.sampleRate = sampleRate;
-    lp.prepare(spec_mono);
-    peak.prepare(spec_mono);
-    hp.prepare(spec_mono);
-    noisepeak.prepare(spec_mono);
-
-    noisepeak.coefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, 3000, 2., juce::Decibels::decibelsToGain(5));
-
-    c_hpFreq = c_lpFreq = -1;
 
     headEQ.prepare(spec_mono);
     noiseEQ.prepare(spec_mono);
@@ -198,25 +186,19 @@ float CoolSnare::get_impulse()
         break;
     }
 
-
     return s * impulse_vol;
 }
 
 float CoolSnare::get_noise()
 {
-    float n = noisepeak.processSample(2. * random.nextFloat() - 1.);
+    float n = noiseEQ.process(2. * random.nextFloat() - 1.);
 
     return n * noise_vol;
 }
 
 void CoolSnare::do_resonance()
 {
-    float hs = 0.;
-    /*
-    h1s += impulse + *head1FB * lp1.processSample(hp1.processSample(head1.get(*head1Delay))) + *sympathy * head2.get(*depth);
-    h2s += *head2FB * lp1.processSample(hp1.processSample(head2.get(*head2Delay))) + *sympathy * head1.get(*depth);
-    */
-    hs += impulse + *FB1 * head.get(*delay1);
+    float hs = impulse + *FB1 * head.get(*delay1);
     if (isnan(hs) || isinf(hs))
     {
         hs = 0;
@@ -224,7 +206,7 @@ void CoolSnare::do_resonance()
 
     hs = juce::jlimit(-1.f, 1.f, hs);
 
-    hs = headEQ.process(hs);//  lp.processSample(peak.processSample(hp.processSample(hs)));
+    hs = headEQ.process(hs);
 
     head.put(hs);
 }
@@ -233,40 +215,6 @@ void CoolSnare::updateFilters()
 {
     headEQ.update();
     noiseEQ.update();
-
-    if (c_order != *hpOrder)
-    {
-        c_order = *hpOrder;
-        hp.setOrder(c_order);
-    }
-
-    if (*hpFreq != c_hpFreq)
-    {
-        c_hpFreq = *hpFreq;
-        float f = juce::jlimit(10.f, (sampleRate / 2.f) - 10.f, hpFreq->load());
-        hp.setCutoffFrequency(f);
-    }
-
-    // lowpass opens up when velocity goes up
-    float a = 0.;// vel* vel* vel* vel** accent;
-    
-    if (*lpFreq != c_lpFreq)
-    {
-        c_lpFreq = *lpFreq;
-        float f = juce::jlimit(10.f, (sampleRate / 2.f) - 10.f, lpFreq->load());
-        lp.setCutoffFrequency(f);
-    }
-
-    peak.coefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, *peakFreq, *peakQ, juce::Decibels::decibelsToGain(peakGain->load()));
-
-    
-    //if (*lpFreq != c_lpFreq)
-    //{
-    //    c_lpFreq = *lpFreq;
-    //    float f = juce::jlimit(10., (sampleRate / 2.) - 10., *lpFreq * sampleRate / 2.);
-    //    lp.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, f);
-    //}
-
 }
 
 void CoolSnare::handleMidiEvent(const juce::MidiMessage& m)

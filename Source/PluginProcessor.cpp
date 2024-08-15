@@ -34,7 +34,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("noisehpFreq",   "noisehpFreq", GRAPH_MIN, GRAPH_MAX, 190.));
     params.add(std::make_unique<juce::AudioParameterFloat>("noisehpRes",    "noisehpRes", juce::NormalisableRange<float> { RES_MIN, RES_MAX, .001f, 1.f}, .707));
     params.add(std::make_unique<juce::AudioParameterInt>(  "noisehpOrder",  "noisehpOrder", 1, 4, 1));
-    params.add(std::make_unique<juce::AudioParameterFloat>("noiselpFreq",   "noiselpFreq", GRAPH_MIN, GRAPH_MAX, 3000.f));
+    params.add(std::make_unique<juce::AudioParameterFloat>("noiselpFreq",   "noiselpFreq", GRAPH_MIN, GRAPH_MAX, 17000.f));
     params.add(std::make_unique<juce::AudioParameterFloat>("noiselpRes",    "noiselpRes", RES_MIN, RES_MAX, .707));
     params.add(std::make_unique<juce::AudioParameterInt>(  "noiselpOrder",  "noiselpOrder", 1, 4, 1));
     params.add(std::make_unique<juce::AudioParameterFloat>("noisepeakFreq", "noisepeakFreq", GRAPH_MIN, GRAPH_MAX, 500.));
@@ -53,7 +53,8 @@ CoolsnareAudioProcessor::CoolsnareAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), apvts(*this, nullptr, "Parameters", createParams()),
+                       ),
+    apvts(*this, nullptr, "Parameters", createParams()),
     cs(apvts)
 #endif
 {

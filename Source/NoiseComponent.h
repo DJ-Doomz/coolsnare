@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "EQComponent.h"
 
+typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 //==============================================================================
 /*
 */
@@ -26,6 +27,8 @@ public:
             *a.getParameter("noiselpFreq"), *a.getParameter("noiselpOrder"), *a.getParameter("noiselpRes"))
     {
         addAndMakeVisible(noiseEq);
+        addAndMakeVisible(release);
+        addAndMakeVisible(mix);
     }
 
     ~NoiseComponent() override
@@ -47,9 +50,22 @@ public:
         auto header = lb.removeFromTop(HEADER_SPACE);
         auto eqRect = lb.removeFromTop(EQ_HEIGHT);
         noiseEq.setBounds(eqRect);
+        release.setBounds(lb.removeFromLeft(lb.getWidth() / 2));
+        mix.setBounds(lb);
+    }
+
+    void addAttachment(juce::AudioProcessorValueTreeState& apvts)
+    {
+        releaseAttachment.reset(new SliderAttachment(apvts, "noiseRelease", release.getSlider()));
+        mixAttachment.reset(new SliderAttachment(apvts, "noiseMix", mix.getSlider()));
     }
 
 private:
+    SliderAndLabel release{ "RELEASE" }, mix{ "MIX" };
+
+    std::unique_ptr<SliderAttachment> releaseAttachment, mixAttachment;
+
+
     juce::AudioProcessorValueTreeState& apvts;
     EQComponent noiseEq;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoiseComponent)

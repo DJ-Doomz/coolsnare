@@ -53,6 +53,10 @@ void EQComponent::paint (juce::Graphics& g)
     auto lb = getLocalBounds();
     auto w = lb.getWidth();
     auto h = lb.getHeight();
+
+    // draw 0db line
+    g.setColour(juce::Colours::grey);
+    g.drawLine(0, h / 2, w, h / 2, 1);
     
     // paint response curves
     updateFilters();
