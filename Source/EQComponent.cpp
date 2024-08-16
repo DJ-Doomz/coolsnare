@@ -234,8 +234,7 @@ void EQNode::paint(juce::Graphics& g)
     float freqx = juce::jmap(freq.getValue(), GRAPH_MIN, GRAPH_MAX);
     freqx = juce::mapFromLog10(freqx, GRAPH_MIN, GRAPH_MAX);
     screenx = juce::jmap(freqx, 0.f, float(w));
-    auto point = juce::Point<float>(screenx, screeny);
-
+    
     screeny = h / 2.;
     if (type == NodeType::PEAK)
     {
@@ -248,6 +247,8 @@ void EQNode::paint(juce::Graphics& g)
         r = juce::jmap(r, RES_MIN, RES_MAX, 0.f, 1.f);
         screeny = juce::jmap(pow(r, 1.f/3.5f), 0.f, 1.f, float(h), 0.f);
     }
+
+    auto point = juce::Point<float>(screenx, screeny);
 
     if (dragging)
     {
