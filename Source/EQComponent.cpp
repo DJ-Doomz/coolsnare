@@ -42,6 +42,8 @@ EQComponent::EQComponent(juce::AudioProcessorValueTreeState& a,
     f_hp.setType(HigherOrderFilter::HP);
 
     init();
+
+    generateGradients();
 }
 
 EQComponent::~EQComponent()
@@ -71,7 +73,8 @@ void EQComponent::paint (juce::Graphics& g)
     std::sort(plot_freqs.begin(), plot_freqs.end());
 
     float starty = magnitudeToScreen(magnitude(20));
-    responsePath.startNewSubPath(0, starty);
+    responsePath.startNewSubPath(-3, h + 1);
+    responsePath.lineTo(0, starty);
     for (auto freq = plot_freqs.begin(); freq != plot_freqs.end(); freq++)
     {
         float x = juce::mapFromLog10(*freq, GRAPH_MIN, GRAPH_MAX)*w; //  juce::jmap(float(i), 0.f, pathpoints, 0.f, float(w));
@@ -79,12 +82,20 @@ void EQComponent::paint (juce::Graphics& g)
         responsePath.lineTo(x, y);
     }
 
+    responsePath.lineTo(w+3, h + 1);
+    responsePath.closeSubPath();
+
+    g.setGradientFill(curveGradient);
+    g.fillPath(responsePath);
     g.setColour(juce::Colours::white);
     g.strokePath(responsePath, juce::PathStrokeType(2));
 
     hp.paint(g);
     peak.paint(g);
     lp.paint(g);
+
+    g.setGradientFill(vignette);
+    g.fillRect(lb);
 }
 
 void EQComponent::resized()
@@ -93,6 +104,8 @@ void EQComponent::resized()
     hp.setBounds(lb);
     peak.setBounds(lb);
     lp.setBounds(lb);
+
+    generateGradients();
 }
 
 void EQComponent::mouseDown(const juce::MouseEvent& e)
@@ -189,6 +202,15 @@ float EQComponent::magnitudeToScreen(float m)
     float y = juce::Decibels::gainToDecibels(m);
     y = juce::jmap(y, -24.f, 24.f, float(h), 0.f);
     return y;
+}
+
+void EQComponent::generateGradients()
+{
+    auto lb = getLocalBounds();
+    auto h = lb.getHeight();
+    curveGradient = juce::ColourGradient(juce::Colour::fromFloatRGBA(.7, .7, .7, .7), 0, 0, juce::Colour::fromFloatRGBA(1., 1., 1., 0.), 0, h, false);
+    vignette = juce::ColourGradient(juce::Colour::fromFloatRGBA(0, 0, 0, 0.), 0, h/2, juce::Colour::fromFloatRGBA(0., 0., 0., 1.), 0, h, false);
+    //vignette.addColour(.5, juce::Colours::transparentBlack);
 }
 
 EQNode::EQNode(NodeType t, juce::RangedAudioParameter& f, juce::RangedAudioParameter& g, juce::RangedAudioParameter& inq) :

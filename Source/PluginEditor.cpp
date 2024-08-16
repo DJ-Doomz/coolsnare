@@ -15,7 +15,7 @@ CoolsnareAudioProcessorEditor::CoolsnareAudioProcessorEditor (CoolsnareAudioProc
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (650, 350);
+    setSize (670, 370);
     addAndMakeVisible(headComponent);
     addAndMakeVisible(impulseComponent);
     addAndMakeVisible(noiseComponent);
@@ -23,6 +23,8 @@ CoolsnareAudioProcessorEditor::CoolsnareAudioProcessorEditor (CoolsnareAudioProc
     impulseComponent.addAttachment(apvts);
     headComponent.addAttachment(apvts);
     noiseComponent.addAttachment(apvts);
+
+    juce::LookAndFeel::setDefaultLookAndFeel(&myLnF);
 }
 
 CoolsnareAudioProcessorEditor::~CoolsnareAudioProcessorEditor()
@@ -41,7 +43,7 @@ void CoolsnareAudioProcessorEditor::resized()
     auto lb = getLocalBounds();
     const int impulseWidth = 150;
     auto impulseRect = lb.removeFromLeft(impulseWidth);
-    impulseComponent.setBounds(impulseRect);
-    headComponent.setBounds(lb.removeFromLeft(lb.getWidth() / 2.));
-    noiseComponent.setBounds(lb);
+    impulseComponent.setBounds(impulseRect.reduced(MARGIN, MARGIN));
+    headComponent.setBounds(lb.removeFromLeft(lb.getWidth() / 2.).reduced(MARGIN, MARGIN));
+    noiseComponent.setBounds(lb.reduced(MARGIN, MARGIN));
 }

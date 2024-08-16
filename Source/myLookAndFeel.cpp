@@ -18,7 +18,8 @@ myLookAndFeel::myLookAndFeel()
     setColour(buttonBGColourId, juce::Colour(16, 16, 16));
 
     setColour(juce::ResizableWindow::backgroundColourId, juce::Colour(4, 4, 4));
-
+    setColour(juce::ComboBox::ColourIds::backgroundColourId, juce::Colours::black);
+    setColour(juce::PopupMenu::ColourIds::backgroundColourId, juce::Colours::black);
     //setDefaultSansSerifTypefaceName("Wingdings");
 
     blueGlow.isRadial = true;
@@ -47,7 +48,6 @@ void myLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width,
 void myLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider)
 {
     auto p = slider.getProperties();
-    auto what = p["bipolar"];
     if (p["bipolar"])
     {
         drawBipolarSlider(g, x, y, width, height, sliderPos, rotaryStartAngle, rotaryEndAngle, slider);

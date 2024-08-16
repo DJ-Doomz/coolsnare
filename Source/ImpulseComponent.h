@@ -36,10 +36,14 @@ public:
     void paint (juce::Graphics& g) override
     {
         auto lb = getLocalBounds();
+        g.setColour(juce::Colours::grey);
+        g.drawRect(lb);
         auto header = lb.removeFromTop(HEADER_SPACE);
         g.setColour (juce::Colours::white);
+        g.setFont(HEADER_FONT_SIZE);
         g.drawText ("Impulse", header,
                     juce::Justification::centred, true);   // draw some placeholder text
+        
     }
 
     void resized() override
@@ -48,9 +52,9 @@ public:
         // components that your component contains..
         auto lb = getLocalBounds();
         auto header = lb.removeFromTop(HEADER_SPACE);
-        juce::Rectangle<int> typeRect = lb.removeFromTop(lb.getHeight() / 2.);
-        type.setBounds(typeRect.withHeight(20).withCentre(typeRect.getCentre()));
-        mixSlider.setBounds(lb.withSizeKeepingCentre(70, 70));
+        juce::Rectangle<int> typeRect = lb.removeFromTop(EQ_HEIGHT);
+        type.setBounds(typeRect.withSizeKeepingCentre(125, 20));
+        mixSlider.setBounds(lb.withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
     }
 
     void addAttachment(juce::AudioProcessorValueTreeState& apvts)

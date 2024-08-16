@@ -13,6 +13,7 @@
 #include "ImpulseComponent.h"
 #include "HeadComponent.h"
 #include "NoiseComponent.h"
+#include "myLookAndFeel.h"
 
 //==============================================================================
 /**
@@ -32,6 +33,8 @@ private:
     // access the processor object that created it.
     CoolsnareAudioProcessor& audioProcessor;
     juce::AudioProcessorValueTreeState& apvts;
+
+    myLookAndFeel myLnF;
 
     HeadComponent headComponent;
     ImpulseComponent impulseComponent;

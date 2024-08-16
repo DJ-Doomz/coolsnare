@@ -86,6 +86,10 @@ private:
 
     float magnitudeToScreen(float m);
 
+    void generateGradients();
+
+    juce::ColourGradient curveGradient, vignette;
+
     juce::AudioProcessorValueTreeState& apvts;
     EQNode hp, peak, lp;
     // eq component has its own copies of the filters for drawing

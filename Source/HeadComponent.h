@@ -31,6 +31,8 @@ public:
         addAndMakeVisible(delay);
         addAndMakeVisible(mix);
         addAndMakeVisible(feedback);
+
+        feedback.getSlider().getProperties().set("bipolar", true);
     }
 
     ~HeadComponent() override
@@ -40,8 +42,11 @@ public:
     void paint (juce::Graphics& g) override
     {
         auto lb = getLocalBounds();
+        g.setColour(juce::Colours::grey);
+        g.drawRect(lb);
         auto header = lb.removeFromTop(HEADER_SPACE);
         g.setColour (juce::Colours::white);
+        g.setFont(HEADER_FONT_SIZE);
         g.drawText ("Head", header,
                     juce::Justification::centred, true);   // draw some placeholder text
     }
@@ -51,10 +56,10 @@ public:
         auto lb = getLocalBounds();
         lb.removeFromTop(HEADER_SPACE);
         auto eqRect = lb.removeFromTop(EQ_HEIGHT);
-        headEq.setBounds(eqRect);
-        delay.setBounds(lb.removeFromLeft(lb.getWidth() / 3.));
-        feedback.setBounds(lb.removeFromLeft(lb.getWidth() / 2.));
-        mix.setBounds(lb);
+        headEq.setBounds(eqRect.reduced(MARGIN));
+        delay.setBounds(lb.removeFromLeft(lb.getWidth() / 3.).withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
+        feedback.setBounds(lb.removeFromLeft(lb.getWidth() / 2.).withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
+        mix.setBounds(lb.withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
     }
 
     void addAttachment(juce::AudioProcessorValueTreeState& apvts)
