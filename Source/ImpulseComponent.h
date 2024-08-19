@@ -41,7 +41,7 @@ public:
         auto header = lb.removeFromTop(HEADER_SPACE);
         g.setColour (juce::Colours::white);
         g.setFont(HEADER_FONT_SIZE);
-        g.drawText ("Impulse", header,
+        g.drawText ("IMPULSE", header,
                     juce::Justification::centred, true);   // draw some placeholder text
         
     }

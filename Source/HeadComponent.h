@@ -47,7 +47,7 @@ public:
         auto header = lb.removeFromTop(HEADER_SPACE);
         g.setColour (juce::Colours::white);
         g.setFont(HEADER_FONT_SIZE);
-        g.drawText ("Head", header,
+        g.drawText ("HEAD", header,
                     juce::Justification::centred, true);   // draw some placeholder text
     }
 
@@ -73,7 +73,7 @@ private:
     juce::AudioProcessorValueTreeState& apvts;
     EQComponent headEq;
 
-    SliderAndLabel delay{ "Delay" }, feedback{ "Feedback" }, mix{ "Mix" };
+    SliderAndLabel delay{ "DELAY" }, feedback{ "FEEDBACK" }, mix{ "MIX" };
     std::unique_ptr<SliderAttachment> delayAttachment, feedbackAttachment, mixAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HeadComponent)
