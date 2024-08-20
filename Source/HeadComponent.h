@@ -12,6 +12,8 @@
 
 #include <JuceHeader.h>
 #include "EQComponent.h"
+#include "CoolSnare.h"
+#include "SpectrumComponent.h"
 
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 
@@ -21,12 +23,14 @@ typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 class HeadComponent  : public juce::Component
 {
 public:
-    HeadComponent(juce::AudioProcessorValueTreeState& a) :
+    HeadComponent(juce::AudioProcessorValueTreeState& a, CoolSnare& cs) :
         apvts(a),
         headEq(a, *a.getParameter("hpFreq"), *a.getParameter("hpOrder"), *a.getParameter("hpRes"),
             *a.getParameter("peakFreq"), *a.getParameter("peakGain"), *a.getParameter("peakQ"),
-            *a.getParameter("lpFreq"), *a.getParameter("lpOrder"), *a.getParameter("lpRes"))
+            *a.getParameter("lpFreq"), *a.getParameter("lpOrder"), *a.getParameter("lpRes")),
+        headSpectrum(a.processor, FFT_ORDER, cs.getHeadFFT(), cs.getHeadReady())
     {
+        addAndMakeVisible(headSpectrum);
         addAndMakeVisible(headEq);
         addAndMakeVisible(delay);
         addAndMakeVisible(mix);
@@ -56,6 +60,7 @@ public:
         auto lb = getLocalBounds();
         lb.removeFromTop(HEADER_SPACE);
         auto eqRect = lb.removeFromTop(EQ_HEIGHT);
+        headSpectrum.setBounds(eqRect.reduced(MARGIN));
         headEq.setBounds(eqRect.reduced(MARGIN));
         delay.setBounds(lb.removeFromLeft(lb.getWidth() / 3.).withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
         feedback.setBounds(lb.removeFromLeft(lb.getWidth() / 2.).withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
@@ -71,7 +76,9 @@ public:
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
+    SpectrumComponent headSpectrum;
     EQComponent headEq;
+
 
     SliderAndLabel delay{ "DELAY" }, feedback{ "FEEDBACK" }, mix{ "MIX" };
     std::unique_ptr<SliderAttachment> delayAttachment, feedbackAttachment, mixAttachment;

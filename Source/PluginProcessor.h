@@ -56,10 +56,10 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     
     juce::AudioProcessorValueTreeState apvts;
+    CoolSnare cs;
 private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParams();
-    CoolSnare cs;
-
+    
     juce::dsp::Limiter<float> limiter;
 
     //==============================================================================

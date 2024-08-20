@@ -24,4 +24,4 @@ static const float EQ_HEIGHT = 150.f;
 static const float KNOB_SIZE = 75.f;
 static const float MARGIN = 5.f;
 
-
+static const int FFT_ORDER = 11;

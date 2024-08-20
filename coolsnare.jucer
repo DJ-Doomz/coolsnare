@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="qud325" name="coolsnare" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              defines="JUCE_VST3_EMULATE_MIDI_CC_WITH_PARAMETERS=0">
+              defines="JUCE_VST3_EMULATE_MIDI_CC_WITH_PARAMETERS=0" userNotes="/fsanitize=address /D _DISABLE_VECTOR_ANNOTATION /D _DISABLE_STRING_ANNOTATION">
   <MAINGROUP id="fGS04E" name="coolsnare">
     <GROUP id="{2FB9A29A-1613-4C8E-0926-ACF0B01B25BF}" name="Data">
       <FILE id="HhxXCg" name="Hitbeads2.wav" compile="0" resource="1" file="Data/Hitbeads2.wav"/>
@@ -32,7 +32,11 @@
             file="Source/HigherOrderFilter.h"/>
       <FILE id="A5wGGO" name="MyEQ.cpp" compile="1" resource="0" file="Source/MyEQ.cpp"/>
       <FILE id="lGE0gR" name="MyEQ.h" compile="0" resource="0" file="Source/MyEQ.h"/>
+      <FILE id="hJdOwN" name="SpectrumComponent.cpp" compile="1" resource="0"
+            file="Source/SpectrumComponent.cpp"/>
       <FILE id="csnCFU" name="HeadComponent.h" compile="0" resource="0" file="Source/HeadComponent.h"/>
+      <FILE id="SfzcPw" name="SpectrumComponent.h" compile="0" resource="0"
+            file="Source/SpectrumComponent.h"/>
       <FILE id="fhPDsy" name="ImpulseComponent.h" compile="0" resource="0"
             file="Source/ImpulseComponent.h"/>
       <FILE id="qWbzbQ" name="NoiseComponent.h" compile="0" resource="0"
@@ -60,7 +64,8 @@
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="coolsnare" enablePluginBinaryCopyStep="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="coolsnare" enablePluginBinaryCopyStep="1"
+                       extraCompilerFlags="/fsanitize=address /D _DISABLE_VECTOR_ANNOTATION /D _DISABLE_STRING_ANNOTATION"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="coolsnare" enablePluginBinaryCopyStep="1"
                        alwaysGenerateDebugSymbols="1" debugInformationFormat="ProgramDatabase"/>
       </CONFIGURATIONS>

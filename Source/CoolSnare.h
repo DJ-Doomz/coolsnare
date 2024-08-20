@@ -26,6 +26,23 @@ public:
     void handleMidiEvent(const juce::MidiMessage&);
 
     void prepareToPlay(double newRate, int samplePerBlock);
+
+    float* getHeadFFT()
+    {
+        return headFFT;
+    };
+    std::atomic<bool>& getHeadReady() {
+        return headReady;
+    };
+
+    float* getNoiseFFT() {
+        return noiseFFT;
+    };
+    std::atomic<bool>& getNoiseReady()
+    {
+        return noiseReady;
+    };
+
 private:
     float get_impulse();
     float get_noise();
@@ -42,6 +59,36 @@ private:
     CircularBuffer head;
 
     MyEQ headEQ, noiseEQ;
+
+    // spectrum stuff
+    std::atomic<bool> headReady, noiseReady;
+    const int fftSize = 1 << FFT_ORDER;
+    int headFifoIndex = 0;
+    int noiseFifoIndex = 0;
+    float headFifo[1 << FFT_ORDER];
+    float headFFT[1 << FFT_ORDER];
+    float noiseFifo[1 << FFT_ORDER];
+    float noiseFFT[1 << FFT_ORDER];
+
+    void pushSampleIntoFifo(float* fifo, float* fftData, int& fifoIndex, std::atomic<bool>& nextFFTBlockReady, float sample)
+    {
+        // if the fifo contains enough data, set a flag to say
+        // that the next frame should now be rendered..
+        if (fifoIndex == fftSize)               // [11]
+        {
+            if (!nextFFTBlockReady)            // [12]
+            {
+                juce::zeromem(fftData, fftSize);
+                memcpy(fftData, fifo, fftSize);
+                nextFFTBlockReady = true;
+            }
+
+            fifoIndex = 0;
+        }
+
+        fifo[fifoIndex++] = sample;             // [12]
+    }
+
 
     juce::Random random;
 
