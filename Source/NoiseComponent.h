@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include "EQComponent.h"
+#include "CoolSnare.h"
 
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 //==============================================================================
@@ -20,12 +21,14 @@ typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 class NoiseComponent  : public juce::Component
 {
 public:
-    NoiseComponent(juce::AudioProcessorValueTreeState& a) :
+    NoiseComponent(juce::AudioProcessorValueTreeState& a, CoolSnare& cs) :
         apvts(a),
         noiseEq(a, *a.getParameter("noisehpFreq"), *a.getParameter("noisehpOrder"), *a.getParameter("noisehpRes"),
             *a.getParameter("noisepeakFreq"), *a.getParameter("noisepeakGain"), *a.getParameter("noisepeakQ"),
-            *a.getParameter("noiselpFreq"), *a.getParameter("noiselpOrder"), *a.getParameter("noiselpRes"))
+            *a.getParameter("noiselpFreq"), *a.getParameter("noiselpOrder"), *a.getParameter("noiselpRes")),
+        noiseSpectrum(a.processor, FFT_ORDER, cs.getNoiseFFT(), cs.getNoiseReady())
     {
+        addAndMakeVisible(noiseSpectrum);
         addAndMakeVisible(noiseEq);
         addAndMakeVisible(release);
         addAndMakeVisible(mix);
@@ -54,6 +57,7 @@ public:
         auto header = lb.removeFromTop(HEADER_SPACE);
         auto eqRect = lb.removeFromTop(EQ_HEIGHT);
         noiseEq.setBounds(eqRect.reduced(MARGIN));
+        noiseSpectrum.setBounds(eqRect.reduced(MARGIN));
         release.setBounds(lb.removeFromLeft(lb.getWidth() / 2).withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
         mix.setBounds(lb.withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
     }
@@ -72,5 +76,6 @@ private:
 
     juce::AudioProcessorValueTreeState& apvts;
     EQComponent noiseEq;
+    SpectrumComponent noiseSpectrum;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoiseComponent)
 };

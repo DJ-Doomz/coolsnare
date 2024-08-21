@@ -193,9 +193,10 @@ float CoolSnare::get_noise()
 {
     float n = noiseEQ.process(2. * random.nextFloat() - 1.);
 
+    n *= noise_vol;
     pushSampleIntoFifo(noiseFifo, noiseFFT, noiseFifoIndex, noiseReady, n);
 
-    return n * noise_vol;
+    return n;
 }
 
 void CoolSnare::do_resonance()

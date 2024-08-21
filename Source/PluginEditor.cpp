@@ -11,7 +11,7 @@
 
 //==============================================================================
 CoolsnareAudioProcessorEditor::CoolsnareAudioProcessorEditor (CoolsnareAudioProcessor& p, juce::AudioProcessorValueTreeState& a)
-    : AudioProcessorEditor (&p), audioProcessor (p), apvts(a), headComponent(a, p.cs), noiseComponent(a)
+    : AudioProcessorEditor (&p), audioProcessor (p), apvts(a), headComponent(a, p.cs), noiseComponent(a, p.cs)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
