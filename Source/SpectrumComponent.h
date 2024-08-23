@@ -123,17 +123,26 @@ private:
         return smooth * x + (1 - smooth) * targetx;
     }
 
-    inline float indexToX(float index, float minFreq) const
+    float indexToX(float index, float minFreq) const
     {
         const auto freq = (processor.getSampleRate() * index) / forwardFFT.getSize();
         return (freq > 0.01f) ? std::log(freq / minFreq) / std::log(2.0f) : 0.0f;
     }
 
-    inline float binToY(float bin, juce::Rectangle<float> bounds) const
+    float binToY(float bin, juce::Rectangle<float> bounds) const
     {
         const float infinity = -80.0f;
         return juce::jmap(juce::Decibels::gainToDecibels(bin, infinity) - juce::Decibels::gainToDecibels(fftSize),
             infinity, 0.0f, 0.f, 1.0f);
+    }
+
+    int xToIndex(int i)
+    {
+        float w = getLocalBounds().getWidth();
+        float s = forwardFFT.getSize();
+        float freq = juce::mapToLog10(i / w, 20.f, 20000.f);
+        int ret = ((freq - 20.f) / (20000.f - 20.f)) * s / 2.f;
+        return ret;
     }
 
 

@@ -41,6 +41,8 @@ v.getRawParameterValue("noisepeakGain")
     noise_vol = 0;
     note_in_hertz = 440;
     vel = 0;
+    headReady = false;
+    noiseReady = false;
     init_params();
     updateFilters();
 
@@ -50,6 +52,14 @@ v.getRawParameterValue("noisepeakGain")
     {
         impulseBuffer.setSize(1, reader->lengthInSamples);
         reader->read(&impulseBuffer, 0, reader->lengthInSamples, 0, false, true);
+    }
+
+    for (int i = 0; i < fftSize; i++)
+    {
+        headFifo [i] = 0;
+        headFFT  [i] = 0;
+        noiseFifo[i] = 0;
+        noiseFFT [i] = 0;
     }
 }
 

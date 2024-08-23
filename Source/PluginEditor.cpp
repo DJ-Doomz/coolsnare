@@ -15,7 +15,7 @@ CoolsnareAudioProcessorEditor::CoolsnareAudioProcessorEditor (CoolsnareAudioProc
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (670, 370);
+    setSize (800, 350);
     addAndMakeVisible(headComponent);
     addAndMakeVisible(impulseComponent);
     addAndMakeVisible(noiseComponent);
