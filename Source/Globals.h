@@ -20,8 +20,8 @@ static const float GRAPH_MAX = 20000.f;
 static const float HEADER_SPACE = 30.f;
 static const float HEADER_FONT_SIZE = 18.f;
 
-static const float EQ_HEIGHT = 150.f;
+static const float EQ_HEIGHT = 160.f;
 static const float KNOB_SIZE = 75.f;
 static const float MARGIN = 5.f;
 
-static const int FFT_ORDER = 11;
+static const int FFT_ORDER = 12;

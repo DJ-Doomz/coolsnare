@@ -171,6 +171,27 @@ void CoolSnare::updateEnvelopes()
     noise_vol = smoothit(noise_vol, 0., nr);
 }
 
+bool CoolSnare::loadSample(const juce::String& s)
+{
+    bool ret = false;
+    juce::File f(s);
+    if (f.existsAsFile())
+    {
+        juce::AudioFormatManager formatManager;
+        formatManager.registerBasicFormats();
+
+        auto* reader = formatManager.createReaderFor(f);
+        if (reader != nullptr)
+        {
+            sampleBuffer.setSize(1, reader->lengthInSamples);
+            reader->read(&sampleBuffer, 0, reader->lengthInSamples, 0, false, true);
+            ret = true;
+        }
+    }
+
+    return ret;
+}
+
 float CoolSnare::get_impulse()
 {
     float s = 0;
@@ -191,6 +212,13 @@ float CoolSnare::get_impulse()
     case 2:
         s = impulse_phase <= 1;
         impulse_phase++;
+        break;
+    case 3:
+        if (impulse_phase < sampleBuffer.getNumSamples())
+        {
+            s = sampleBuffer.getSample(0, impulse_phase);
+            impulse_phase += (note_in_hertz * 44100.f / 440.f) / sampleRate;
+        }
         break;
     default:
         break;

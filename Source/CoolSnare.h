@@ -43,6 +43,8 @@ public:
         return noiseReady;
     };
 
+    bool loadSample(const juce::String&);
+
 private:
     float get_impulse();
     float get_noise();
@@ -89,11 +91,11 @@ private:
         fifo[fifoIndex++] = sample;             // [12]
     }
 
-
     juce::Random random;
 
     juce::AudioBuffer<float> synthBuffer,
-        impulseBuffer;
+        impulseBuffer,
+        sampleBuffer;
     juce::AudioProcessorValueTreeState& apvts;
 
     // parameters

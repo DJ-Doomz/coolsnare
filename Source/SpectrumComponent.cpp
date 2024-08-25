@@ -28,11 +28,11 @@ void SpectrumComponent::drawNextFrameOfSpectrum(juce::Graphics& g)
     float w = lb.getWidth();
     const auto factor = lb.getWidth() / 10.0f;
 
-    const float smoothing = 0.94;
+    const float smoothing = 0.96;
     // do smooth towards next scope data
     for (int i = 0; i < scopeSize; ++i)                         // [3]
     {
-        if (nextScopeData[i] > scopeData[i])
+        if (nextScopeData[i] >= scopeData[i])
         {
             scopeData[i] = nextScopeData[i];
         }
@@ -64,21 +64,6 @@ void SpectrumComponent::drawNextFrameOfSpectrum(juce::Graphics& g)
     }
 
     // actual drawing stuff
-    
-    // drawing every point in scopeData
-    /*
-    spectrumPath.clear();
-    spectrumPath.preallocateSpace(8 + scopeSize * 3);
-    spectrumPath.startNewSubPath(lb.getX() + factor * indexToX(0, 20.f), juce::jmap(scopeData[0], bottom, top));
-    // only bother making as many points as the width of the component
-    for (int i = 0; i < scopeSize; ++i)                         // [3]
-    {
-        spectrumPath.lineTo(lb.getX() + factor * indexToX(float(i), 20.f), juce::jmap(scopeData[i], bottom, top));
-    }
-    
-    g.setColour(juce::Colour::fromFloatRGBA(1.f, 1.f, 1.f, .6f));
-    g.strokePath(spectrumPath.createPathWithRoundedCorners(5), juce::PathStrokeType(2.0));
-    */
 
     // only drawing every other screen pixel
     spectrumPath.clear();
@@ -96,9 +81,4 @@ void SpectrumComponent::drawNextFrameOfSpectrum(juce::Graphics& g)
 
 void SpectrumComponent::resized()
 {
-    auto lb = getLocalBounds();
-    auto w = lb.getWidth();
-    auto h = lb.getHeight();
-
-    buffer = buffer.rescaled(lb.getWidth(), lb.getHeight());
 }

@@ -20,17 +20,49 @@ typedef juce::AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachmen
 //==============================================================================
 /*
 */
-class ImpulseComponent  : public juce::Component
+class ImpulseComponent  : public juce::Component, public juce::ChangeListener
 {
 public:
     ImpulseComponent()
+        : thumbnailCache(5),
+        thumbnail(512, formatManager, thumbnailCache)
     {
         addAndMakeVisible(type);
         addAndMakeVisible(mixSlider);
+
+        formatManager.registerBasicFormats();
+
+        thumbnail.addChangeListener(this);
     }
 
     ~ImpulseComponent() override
     {
+    }
+
+    void loadFile(const juce::String& s)
+    {
+        juce::File f(s);
+        if (f.exists())
+        {
+            auto* reader = formatManager.createReaderFor(f);
+
+            if (reader != nullptr)
+            {
+                auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+                thumbnail.setSource(new juce::FileInputSource(f));                            // [7]
+                readerSource.reset(newSource.release());
+            }
+        }
+    }
+
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override
+    {
+        if (source == &thumbnail)       thumbnailChanged();
+    }
+
+    void thumbnailChanged()
+    {
+        repaint();
     }
 
     void paint (juce::Graphics& g) override
@@ -42,8 +74,37 @@ public:
         g.setColour (juce::Colours::white);
         g.setFont(HEADER_FONT_SIZE);
         g.drawText ("IMPULSE", header,
-                    juce::Justification::centred, true);   // draw some placeholder text
-        
+                    juce::Justification::centred, true);
+        lb = lb.removeFromTop(EQ_HEIGHT);
+        lb.removeFromTop(SELECTION_HEIGHT);
+
+        if (thumbnail.getNumChannels() == 0)
+            paintIfNoFileLoaded(g, lb.reduced(MARGIN));
+        else
+            paintIfFileLoaded(g, lb.reduced(MARGIN));
+    }
+
+    void paintIfNoFileLoaded(juce::Graphics& g, const juce::Rectangle<int>& thumbnailBounds)
+    {
+        g.setColour(juce::Colours::black);
+        g.fillRect(thumbnailBounds);
+        g.setColour(juce::Colours::darkgrey);
+        g.drawRect(thumbnailBounds);
+    }
+
+    void paintIfFileLoaded(juce::Graphics& g, const juce::Rectangle<int>& thumbnailBounds)
+    {
+        g.setColour(juce::Colours::black);
+        g.fillRect(thumbnailBounds);
+
+        g.setColour(juce::Colours::red);                               // [8]
+
+        thumbnail.drawChannel(g,
+            thumbnailBounds,
+            0.,
+            thumbnail.getTotalLength(),
+            0,
+            1.0f);
     }
 
     void resized() override
@@ -53,7 +114,7 @@ public:
         auto lb = getLocalBounds();
         auto header = lb.removeFromTop(HEADER_SPACE);
         juce::Rectangle<int> typeRect = lb.removeFromTop(EQ_HEIGHT);
-        type.setBounds(typeRect.withSizeKeepingCentre(125, 20));
+        type.setBounds(typeRect.withSize(125, SELECTION_HEIGHT));
         mixSlider.setBounds(lb.withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
     }
 
@@ -67,6 +128,13 @@ public:
     }
 
 private:
+    //waveform drawing stuffs:
+    juce::AudioFormatManager formatManager;
+    std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
+    juce::AudioThumbnailCache thumbnailCache;
+    juce::AudioThumbnail thumbnail;
+
+    const int SELECTION_HEIGHT = 20;
     SliderAndLabel mixSlider{ "MIX" };
     std::unique_ptr<SliderAttachment> mixAttachment;
     juce::ComboBox type;

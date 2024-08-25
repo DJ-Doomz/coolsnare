@@ -29,7 +29,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("peakGain", "peakGain", GAIN_MIN, 0., 0.));
     params.add(std::make_unique<juce::AudioParameterFloat>("peakQ", "peakQ", RES_MIN, RES_MAX, 1.));
     params.add(std::make_unique<juce::AudioParameterFloat>("accent", "accent", 0., 1., 0.));
-    params.add(std::make_unique<juce::AudioParameterChoice>("impulseType", "impulseType", juce::StringArray({ "sample", "noise", "click"}), 0));
+    params.add(std::make_unique<juce::AudioParameterChoice>("impulseType", "impulseType", juce::StringArray({ "hit", "noise", "click", "sample"}), 0));
 
     params.add(std::make_unique<juce::AudioParameterFloat>("noisehpFreq",   "noisehpFreq", GRAPH_MIN, GRAPH_MAX, 190.));
     params.add(std::make_unique<juce::AudioParameterFloat>("noisehpRes",    "noisehpRes", juce::NormalisableRange<float> { RES_MIN, RES_MAX, .001f, 1.f}, .707));
@@ -219,10 +219,20 @@ void CoolsnareAudioProcessor::setStateInformation (const void* data, int sizeInB
 
     if (xmlState.get() != nullptr)
         if (xmlState->hasTagName(apvts.state.getType()))
+        {
             apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
+            auto what = apvts.state["loadedSample"];
+            if (what.isString())
+            {
+                cs.loadSample(what.toString());
+                // am i doing this right
+                auto* what2 = getActiveEditor();
+                CoolsnareAudioProcessorEditor* e = dynamic_cast<CoolsnareAudioProcessorEditor*> (what2);
+                if(e != nullptr)
+                    e->loadFile(what.toString());
+            }
+        }
 }
-
-
 
 //==============================================================================
 // This creates new instances of the plugin..

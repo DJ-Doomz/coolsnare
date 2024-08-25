@@ -47,8 +47,7 @@ public:
         scopeSize(fftSize/2),
         window(fftSize, juce::dsp::WindowingFunction<float>::hann),
         scopeData{ 0 },
-        nextScopeData{ 0 },
-        buffer(juce::Image::PixelFormat::ARGB, 700, 700 / 3, true)
+        nextScopeData{ 0 }
     {
         startTimerHz(120);
 
@@ -113,8 +112,6 @@ private:
     juce::Path spectrumPath;
 
     // drawing stuff
-    juce::Image buffer;
-
     void drawNextFrameOfSpectrum(juce::Graphics& g);
 
     // helper functions (should probably make my own little library of these at one point)
