@@ -114,7 +114,7 @@ public:
         auto lb = getLocalBounds();
         auto header = lb.removeFromTop(HEADER_SPACE);
         juce::Rectangle<int> typeRect = lb.removeFromTop(EQ_HEIGHT);
-        type.setBounds(typeRect.withSize(125, SELECTION_HEIGHT));
+        type.setBounds(typeRect.withSize(lb.getWidth(), SELECTION_HEIGHT).reduced(MARGIN));
         mixSlider.setBounds(lb.withSizeKeepingCentre(KNOB_SIZE, KNOB_SIZE));
     }
 
@@ -134,7 +134,7 @@ private:
     juce::AudioThumbnailCache thumbnailCache;
     juce::AudioThumbnail thumbnail;
 
-    const int SELECTION_HEIGHT = 20;
+    const int SELECTION_HEIGHT = 35;
     SliderAndLabel mixSlider{ "MIX" };
     std::unique_ptr<SliderAttachment> mixAttachment;
     juce::ComboBox type;

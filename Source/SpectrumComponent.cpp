@@ -28,18 +28,14 @@ void SpectrumComponent::drawNextFrameOfSpectrum(juce::Graphics& g)
     float w = lb.getWidth();
     const auto factor = lb.getWidth() / 10.0f;
 
-    const float smoothing = 0.96;
+    const float smoothing = 0.92;
     // do smooth towards next scope data
     for (int i = 0; i < scopeSize; ++i)                         // [3]
     {
         if (nextScopeData[i] >= scopeData[i])
-        {
-            scopeData[i] = nextScopeData[i];
-        }
+            scopeData[i] = smoothit(scopeData[i], nextScopeData[i], .8);
         else
-        {
-            scopeData[i] = smoothing * scopeData[i] + (1 - smoothing) * nextScopeData[i];
-        }
+            scopeData[i] = smoothit(scopeData[i], nextScopeData[i], smoothing);
     }
 
     // first apply a windowing function to our data

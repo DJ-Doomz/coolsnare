@@ -30,6 +30,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CoolsnareAudioProcessor::cre
     params.add(std::make_unique<juce::AudioParameterFloat>("peakQ", "peakQ", RES_MIN, RES_MAX, 1.));
     params.add(std::make_unique<juce::AudioParameterFloat>("accent", "accent", 0., 1., 0.));
     params.add(std::make_unique<juce::AudioParameterChoice>("impulseType", "impulseType", juce::StringArray({ "hit", "noise", "click", "sample"}), 0));
+    params.add(std::make_unique<juce::AudioParameterFloat>("impulseRelease", "impulseRelease", 0., 1., 0.1));
 
     params.add(std::make_unique<juce::AudioParameterFloat>("noisehpFreq",   "noisehpFreq", GRAPH_MIN, GRAPH_MAX, 190.));
     params.add(std::make_unique<juce::AudioParameterFloat>("noisehpRes",    "noisehpRes", juce::NormalisableRange<float> { RES_MIN, RES_MAX, .001f, 1.f}, .707));
